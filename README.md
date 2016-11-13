@@ -21,12 +21,16 @@ Event e = tba.getEvent("casd",2016);
 ```
 
 Pulling data will return it's respective *model* such as Event, Team, Match, etc.
-Access the model's data by calling the public variable. Example: ```java 
-team.team_number```
+Access the model's data by calling the public variable. Example: 
+```java 
+team.team_number
+```
 
 Not all data will be automatically added. To configure whether to download extra data,
-see the *Settings* class and change the booleans statically, such as ```java 
-Settings.GET_EVENT_ALLIANCE = true.```
+see the *Settings* class and change the booleans statically, such as 
+```java 
+Settings.GET_EVENT_ALLIANCE = true.
+```
 
 # Other
 Report any bugs or suggestions to wdavies973@gmail.com
