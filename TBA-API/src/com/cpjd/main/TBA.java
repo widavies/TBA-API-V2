@@ -2,6 +2,7 @@ package com.cpjd.main;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -14,11 +15,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.cpjd.models.Award;
-import com.cpjd.models.Award.Recipient;
 import com.cpjd.models.Event;
-import com.cpjd.models.Event.Alliance;
 import com.cpjd.models.Match;
 import com.cpjd.models.Team;
+
 
 public class TBA {
 
@@ -67,7 +67,7 @@ public class TBA {
 		
 		if(Settings.GET_EVENT_ALLIANCES) {
 			JSONArray alliances = (JSONArray) hash.get("alliances");
-			event.alliances = new Alliance[alliances.size()];
+			event.alliances = new Event.Alliance[alliances.size()];
 			
 			for(int i = 0; i < alliances.size(); i++) {
 				JSONObject obj = (JSONObject) alliances.get(i);
@@ -164,15 +164,20 @@ public class TBA {
 		
 		JSONObject blueTeam = (JSONObject) alliances.get("blue");
 		JSONObject redTeam = (JSONObject) alliances.get("red");
+
 		m.blueScore = (Long)blueTeam.get("score");
 		m.redScore = (Long)redTeam.get("score");
 		
 		m.blueTeams = new String[3];
 		m.redTeams = new String[3];
-		
-		for(int j = 0; j < 3; j++) {
-			m.blueTeams[j] = (String) blueTeam.get(String.valueOf(j));
-			m.redTeams[j] = (String) redTeam.get(String.valueOf(j));
+
+        String[] redTeamTokens = redTeam.get("teams").toString().replace("\"", "").replace("[", "").replace("]", "").split(",");
+        String[] blueTeamTokens = blueTeam.get("teams").toString().replace("\"", "").replace("[", "").replace("]", "").split(",");
+
+
+        for(int j = 0; j < 3; j++) {
+            m.blueTeams[j] = blueTeamTokens[j];
+            m.redTeams[j] = redTeamTokens[j];
 		}
 		
 		try {
@@ -203,7 +208,7 @@ public class TBA {
 	private Team parseTeam(Object object) {
 		Team t = new Team();
 		HashMap hash = (HashMap) object;
-		
+
 		t.name = (String) hash.get("name");
 		t.team_number = (Long) hash.get("team_number");
 		t.website = (String) hash.get("website");
@@ -236,7 +241,7 @@ public class TBA {
 			
 			try {
 				JSONArray recipient_list = (JSONArray) hash.get("recipient_list");
-				m.recipient_list = new Recipient[recipient_list.size()];
+				m.recipient_list = new Award.Recipient[recipient_list.size()];
 				for (int j = 0; j < recipient_list.size(); j++) {
 					JSONObject obj = (JSONObject) recipient_list.get(j);
 
@@ -260,9 +265,10 @@ public class TBA {
 			connection.setRequestMethod("GET");
 			connection.setRequestProperty("User-Agent", "TBA-API");
 			connection.setRequestProperty("X-TBA-App-Id", appID);
-
+            connection.setRequestProperty("Content-Type",
+                    "application/x-www-form-urlencoded");
+            connection.setRequestProperty("charset", "utf-8");
 			connection.setUseCaches(false);
-			connection.setDoOutput(true);
 
 			InputStream is = connection.getInputStream();
 			BufferedReader rd = new BufferedReader(new InputStreamReader(is));
@@ -275,6 +281,12 @@ public class TBA {
 			rd.close();
 			return parser.parse(response.toString());
 		} catch (FileNotFoundException e) {
+            try {
+                System.err.println("DATA REQUEST FAILED: "+e.getMessage()+"RESPONSE CODE: "+connection.getResponseCode()+connection.getResponseMessage());
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            e.printStackTrace();
 			return null;
 		} catch(Exception e) {
 			System.err.println("Data request failed. Check your connection / verify correct data key. If the issue persists, contact the developer");
