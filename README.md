@@ -35,3 +35,7 @@ Settings.GET_EVENT_ALLIANCE = true.
 # Other
 Report any bugs or suggestions to wdavies973@gmail.com
 If you'd like any more functionality as far as ways you can pull data, and what you can pull, let me know and I'll add it right away.
+
+# Roblu
+This API is using in my scouting app Roblu. It's an all-in-one solution to scouting.
+Check it out at: https://github.com/techguy9984/Roblu
