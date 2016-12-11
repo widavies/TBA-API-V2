@@ -182,7 +182,7 @@ public class TBA {
 		Event event = new Event();
 		HashMap hash = (HashMap) object;
 
-		event.key = ((String) hash.get("key")).replace("\\d\\d\\d\\d", ""); 
+		event.key = ((String) hash.get("key")).replaceAll("\\d",""); 
 		event.name = (String) hash.get("name");
 		event.short_name = (String) hash.get("short_name");
 		event.event_code = (String) hash.get("event_code");
@@ -190,7 +190,7 @@ public class TBA {
 		event.event_district_string = (String) hash.get("event_district_string");
 		event.event_district = (Long) hash.get("event_district");
 		event.year = (Long) hash.get("year");
-		event.week = (Long) hash.get("week");
+		//event.week = (Long) hash.get("week");
 		event.location = (String) hash.get("location");
 		event.venue_address = (String) hash.get("venue_address");
 		event.timezone = (String) hash.get("timezone");
