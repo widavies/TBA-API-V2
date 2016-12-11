@@ -27,7 +27,7 @@ public class TBA {
 	private final JSONParser parser = new JSONParser();
 	
 	/**
-	 * REQUIRED
+	 * REQUIRED 
 	 * Creates a new TBA object for getting data.
 	 * The three parameters are required for the identification header sent to the server.
 	 * @param id The team / person id
