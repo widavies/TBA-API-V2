@@ -135,7 +135,11 @@ public class TBA {
 	public Team getTeam(int number) {
 		return parseTeam(doRequest(Constants.URL + "team/frc"+number, Constants.APPID));
 	}
-	
+	public Event[] getTeamEvents(int teamNumber, int year) {
+		Event[] allEvents = (Event[])doRequest(Constants.URL + "team/frc" + teamNumber + "/" + year + "/events", Constants.APPID);
+		// Get all the events of a team in a given year.
+		return allEvents;
+	}
 	/**
 	 * Returns a single </code>Match</code> model 
 	 * @param year The event year (example: 2016)
@@ -220,6 +224,7 @@ public class TBA {
 		t.nickname = (String) hash.get("nickname");
 		t.rookie_year = (Long) hash.get("rookie_year");
 		t.motto = (String) hash.get("motto");
+		
 		
 		return t;
 	}
