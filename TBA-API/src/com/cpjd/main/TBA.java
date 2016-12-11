@@ -45,45 +45,7 @@ public class TBA {
 	 */
 	@SuppressWarnings("rawtypes")
 	public Event getEvent(String key, int year) {
-		HashMap hash = (HashMap) doRequest(Constants.URL + "event/"+year+key, Constants.APPID);
-		Event event = new Event();
-		event.key = year + key;
-		event.name = (String) hash.get("name");
-		event.short_name = (String) hash.get("short_name");
-		event.event_code = (String) hash.get("event_code");
-		event.event_type_string = (String) hash.get("event_type_string");
-		event.event_district_string = (String) hash.get("event_district_string");
-		event.event_district = (Long) hash.get("event_district");
-		event.year = (Long) hash.get("year");
-		event.week = (Long) hash.get("week");
-		event.location = (String) hash.get("location");
-		event.venue_address = (String) hash.get("venue_address");
-		event.timezone = (String) hash.get("timezone");
-		event.website = (String) hash.get("website");
-		event.official = (boolean) hash.get("official");
-		if(Settings.GET_EVENT_MATCHES) event.matches = getMatches(key, year);
-		if(Settings.GET_EVENT_TEAMS) event.teams = getTeams(key, year);
-		if(Settings.GET_EVENT_AWARDS) event.awards = getAwards(key, year);
-		
-		if(Settings.GET_EVENT_ALLIANCES) {
-			JSONArray alliances = (JSONArray) hash.get("alliances");
-			event.alliances = new Event.Alliance[alliances.size()];
-			
-			for(int i = 0; i < alliances.size(); i++) {
-				JSONObject obj = (JSONObject) alliances.get(i);
-				JSONArray declines = (JSONArray) obj.get("declines");
-				JSONArray picks = (JSONArray) obj.get("picks");
-				event.alliances[i].declines = new String[declines.size()];
-				for(int j = 0; j < event.alliances[i].declines.length; j++) {
-					 event.alliances[i].declines[j] = (String) declines.get(j);
-				}
-				event.alliances[i].picks = new String[picks.size()];
-				for(int j = 0; j < event.alliances[i].picks.length; j++) {
-					event.alliances[i].picks[j] = (String) picks.get(j);
-				}
-			}
-		}
-		return event;
+		return parseEvent(doRequest(Constants.URL + "event/" + year + key, Constants.APPID));
 	}
 	
 	/**
@@ -140,9 +102,13 @@ public class TBA {
 	 * for a given year in the form of Event[]
 	 */
 	public Event[] getTeamEvents(int teamNumber, int year) {
-		Event[] allEvents = (Event[])doRequest(Constants.URL + "team/frc" + teamNumber + "/" + year + "/events", Constants.APPID);
+		JSONArray events = (JSONArray)doRequest(Constants.URL + "team/frc" + teamNumber + "/" + year + "/events", Constants.APPID);
 		// Get all the events of a team in a given year.
-		return allEvents;
+		Event[] toGet = new Event[events.size()];
+		for(int i = 0; i < toGet.length; i++) {
+			toGet[i] = parseEvent(events.get(i));
+		}
+		return toGet;
 	}
 	/**
 	 * Returns a single </code>Match</code> model 
@@ -211,6 +177,50 @@ public class TBA {
 		return m;
 	}
 	
+	@SuppressWarnings("rawtypes")
+	private Event parseEvent(Object object) {
+		Event event = new Event();
+		HashMap hash = (HashMap) object;
+
+		event.key = ((String) hash.get("key")).replace("\\d\\d\\d\\d", ""); 
+		event.name = (String) hash.get("name");
+		event.short_name = (String) hash.get("short_name");
+		event.event_code = (String) hash.get("event_code");
+		event.event_type_string = (String) hash.get("event_type_string");
+		event.event_district_string = (String) hash.get("event_district_string");
+		event.event_district = (Long) hash.get("event_district");
+		event.year = (Long) hash.get("year");
+		event.week = (Long) hash.get("week");
+		event.location = (String) hash.get("location");
+		event.venue_address = (String) hash.get("venue_address");
+		event.timezone = (String) hash.get("timezone");
+		event.website = (String) hash.get("website");
+		event.official = (boolean) hash.get("official");
+		if(Settings.GET_EVENT_MATCHES) event.matches = getMatches(event.key, (int)event.year);
+		if(Settings.GET_EVENT_TEAMS) event.teams = getTeams(event.key, (int)event.year);
+		if(Settings.GET_EVENT_AWARDS) event.awards = getAwards(event.key, (int)event.year);
+		
+		if(Settings.GET_EVENT_ALLIANCES) {
+			JSONArray alliances = (JSONArray) hash.get("alliances");
+			event.alliances = new Event.Alliance[alliances.size()];
+			
+			for(int i = 0; i < alliances.size(); i++) {
+				JSONObject obj = (JSONObject) alliances.get(i);
+				JSONArray declines = (JSONArray) obj.get("declines");
+				JSONArray picks = (JSONArray) obj.get("picks");
+				event.alliances[i].declines = new String[declines.size()];
+				for(int j = 0; j < event.alliances[i].declines.length; j++) {
+					 event.alliances[i].declines[j] = (String) declines.get(j);
+				}
+				event.alliances[i].picks = new String[picks.size()];
+				for(int j = 0; j < event.alliances[i].picks.length; j++) {
+					event.alliances[i].picks[j] = (String) picks.get(j);
+				}
+			}
+		}
+		
+		return event;
+	}
 	
 	@SuppressWarnings("rawtypes")
 	private Team parseTeam(Object object) {
