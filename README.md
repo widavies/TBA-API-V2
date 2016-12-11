@@ -10,10 +10,14 @@ Download the .jar file from https://github.com/techguy9984/TBA-API/releases.
 Add the jar as a dependency in your project.
 
 # Usage
-To use the API, create a TBA object three parameters (id, app description, version):
+To use the API, first, set the ID statically with three variables:  
 ```java
-TBA tba = new TBA("johnsmith","scoutingApp","v1");
+TBA.setID("id","description","version");
 ```
+Then, create a TBA object:  
+```java
+TBA tba = new TBA();
+```java
 Pull data from TBA by calling the respective method within TBA.
 For example, to get an event you would do:
 ```java
@@ -29,7 +33,11 @@ team.team_number
 Not all data will be automatically added. To configure whether to download extra data,
 see the *Settings* class and change the booleans statically, such as 
 ```java 
-Settings.GET_EVENT_ALLIANCE = true.
+Settings.GET_EVENT_ALLIANCE = true; // Gets the alliance picks and declines in the event.
+Settings.FIND_TEAM_RANKINGS = true; // Sorts the Event.Teams[] array by the team's rank within the event. Fills out 8 more variables in the Team model.
+Settings.GET_EVENT_MATCHES = true; // Whether to get matches when pulling an event.
+Settings.GET_EVENT_TEAMS = true; // Whether to get teams when pulling an event. 
+Settings.GET_EVENT_AWARDS = true; // Whether to get awards won when pulling an event.
 ```
 
 # Other
