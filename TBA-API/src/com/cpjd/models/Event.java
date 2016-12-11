@@ -1,7 +1,5 @@
 package com.cpjd.models;
 
-import java.util.Map;
-
 public class Event {
 	public String key;
 	public String name;

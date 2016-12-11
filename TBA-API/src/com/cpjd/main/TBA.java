@@ -43,14 +43,19 @@ public class TBA {
 	 * @param year The year of the event (example: 2016)
 	 * @return An instance of the </code>Event</code> model
 	 */
-	@SuppressWarnings("rawtypes")
 	public Event getEvent(String key, int year) {
 		return parseEvent(doRequest(Constants.URL + "event/" + year + key, Constants.APPID));
 	}
 	
 	@SuppressWarnings("unchecked")
-	public HashMap<String, HashMap<Team, Integer>> getEventStats(Event event) {
-		HashMap<String, HashMap<Team, Integer>> toGet = (HashMap<String, HashMap<Team, Integer>>) doRequest(Constants.URL + "event/" + event.year + event.key + "/stats", Constants.APPID);
+	public HashMap<Integer, Double> getEventStats(Event event, String statKey) {
+		HashMap<String, Double> stat = ((HashMap<String,HashMap<String,Double>>) doRequest(Constants.URL + "event/" + event.year + event.key + "/stats", Constants.APPID)).get(statKey);
+		
+		HashMap<Integer, Double> toGet = new HashMap<Integer, Double>();
+		
+		for(String key : stat.keySet()){ // Transfer to the other Hashmap
+			toGet.put(Integer.parseInt(key), stat.get(key));
+		}
 		return toGet;
 	}
 	
