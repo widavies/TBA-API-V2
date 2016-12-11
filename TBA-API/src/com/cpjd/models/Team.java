@@ -15,7 +15,8 @@ public class Team {
 	public String motto;
 	
 	/**
-	 * Ranking information about the team within a certain event.
+	 * Ranking information about the team within a certain event. These variables are only
+	 * set if Settings.FIND_TEAM_RANKINGS is true
 	 */
 	
 	public int rank;
