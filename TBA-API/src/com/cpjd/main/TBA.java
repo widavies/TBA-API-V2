@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -16,6 +17,7 @@ import org.json.simple.parser.JSONParser;
 
 import com.cpjd.models.Award;
 import com.cpjd.models.Event;
+import com.cpjd.models.Event.Alliance;
 import com.cpjd.models.Match;
 import com.cpjd.models.Team;
 
@@ -25,13 +27,14 @@ public class TBA {
 	private final JSONParser parser = new JSONParser();
 	
 	/**
+	 * REQUIRED
 	 * Creates a new TBA object for getting data.
 	 * The three parameters are required for the identification header sent to the server.
 	 * @param id The team / person id
 	 * @param description App description
 	 * @param version App version
 	 */
-	public TBA(String id, String description, String version) {
+	public static void setID(String id, String description, String version) {
 		Constants.APPID = id + ":" + description + ":" + version;
 	}
 
@@ -71,17 +74,70 @@ public class TBA {
 			
 			for(int i = 0; i < alliances.size(); i++) {
 				JSONObject obj = (JSONObject) alliances.get(i);
-				JSONArray declines = (JSONArray) obj.get("declines");
-				JSONArray picks = (JSONArray) obj.get("picks");
-				event.alliances[i].declines = new String[declines.size()];
-				for(int j = 0; j < event.alliances[i].declines.length; j++) {
-					 event.alliances[i].declines[j] = (String) declines.get(j);
+				JSONArray picks = null;
+				JSONArray declines = null;
+				try {
+					 picks = (JSONArray) obj.get("picks");
+				} catch(Exception e) {}
+				try { 
+					declines = (JSONArray) obj.get("declines");
+				} catch(Exception e) {}
+				
+				Alliance alliance = new Event().new Alliance();
+				if(picks != null && picks.size() > 0) {
+					alliance.picks = new String[picks.size()];
+					for(int j = 0; j < alliance.picks.length; j++) {
+						alliance.picks[j] = (String) picks.get(j);
+					}
+					
+				} else {
+					System.out.println("Event: No picks available for alliance: "+(i+1));
 				}
-				event.alliances[i].picks = new String[picks.size()];
-				for(int j = 0; j < event.alliances[i].picks.length; j++) {
-					event.alliances[i].picks[j] = (String) picks.get(j);
+				if(declines != null && declines.size() > 0) {
+					alliance.declines = new String[declines.size()];
+					for(int j = 0; j < alliance.declines.length; j++) {
+						alliance.declines[j] = (String) declines.get(j);
+					}
+				} else {
+					System.out.println("Event: No declines available for alliance: "+(i+1));
+				}
+				
+				event.alliances[i] = alliance;
+			}
+		}
+		if(Settings.FIND_TEAM_RANKINGS) {
+			JSONArray ranks = (JSONArray) doRequest(Constants.URL +"event/"+year+key+"/rankings", Constants.APPID);
+			for(int i = 1; i < ranks.size(); i++) {
+				JSONArray obj = (JSONArray) ranks.get(i);
+				for(int j = 0; j < event.teams.length; j++) {
+					if(event.teams[j].team_number == Integer.parseInt((String)obj.get(1))) {
+						event.teams[j].rank = Integer.parseInt((String)obj.get(0));
+						event.teams[j].rankingScore = Double.parseDouble((String)obj.get(2));
+						event.teams[j].auto = Double.parseDouble((String)obj.get(3));
+						event.teams[j].scaleOrChallenge = Double.parseDouble((String)obj.get(4));
+						event.teams[j].goals = Double.parseDouble((String)obj.get(5));
+						event.teams[j].defense = Double.parseDouble((String)obj.get(6));
+						event.teams[j].record = (String) obj.get(7);
+						event.teams[j].played = Integer.parseInt((String)obj.get(8));	
+					}
 				}
 			}
+			
+			ArrayList<Team> tempRanked = new ArrayList<Team>();
+			for(int i = 0; i < event.teams.length; i++) {
+				for(int j = 0; j < event.teams.length; j++) {
+					if(event.teams[j].rank == (i + 1)) {
+						tempRanked.add(event.teams[j]);
+					}
+				}
+			}
+			
+			Team[] ranked = new Team[tempRanked.size()];
+			for(int i = 0; i < tempRanked.size(); i++) {
+				ranked[i] = tempRanked.get(i);
+			}
+			event.teams = ranked;
+			tempRanked.clear();
 		}
 		return event;
 	}

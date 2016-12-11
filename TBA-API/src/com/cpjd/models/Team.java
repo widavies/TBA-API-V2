@@ -13,4 +13,17 @@ public class Team {
 	public String nickname;
 	public long rookie_year;
 	public String motto;
+	
+	/**
+	 * Ranking information about the team within a certain event.
+	 */
+	
+	public int rank;
+	public double rankingScore;
+	public double auto;
+	public double scaleOrChallenge;
+	public double goals;
+	public double defense;
+	public String record;
+	public int played;
 }
