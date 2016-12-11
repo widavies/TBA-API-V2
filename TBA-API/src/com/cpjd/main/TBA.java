@@ -135,6 +135,10 @@ public class TBA {
 	public Team getTeam(int number) {
 		return parseTeam(doRequest(Constants.URL + "team/frc"+number, Constants.APPID));
 	}
+	/**
+	 * Returns all the events a team has participated in 
+	 * for a given year in the form of Event[]
+	 */
 	public Event[] getTeamEvents(int teamNumber, int year) {
 		Event[] allEvents = (Event[])doRequest(Constants.URL + "team/frc" + teamNumber + "/" + year + "/events", Constants.APPID);
 		// Get all the events of a team in a given year.
