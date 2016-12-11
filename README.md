@@ -17,7 +17,7 @@ TBA.setID("id","description","version");
 Then, create a TBA object:  
 ```java
 TBA tba = new TBA();
-```java
+```
 Pull data from TBA by calling the respective method within TBA.
 For example, to get an event you would do:
 ```java
