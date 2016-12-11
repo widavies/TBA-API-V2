@@ -48,6 +48,12 @@ public class TBA {
 		return parseEvent(doRequest(Constants.URL + "event/" + year + key, Constants.APPID));
 	}
 	
+	@SuppressWarnings("unchecked")
+	public HashMap<String, HashMap<Team, Integer>> getEventStats(Event event) {
+		HashMap<String, HashMap<Team, Integer>> toGet = (HashMap<String, HashMap<Team, Integer>>) doRequest(Constants.URL + "event/" + event.year + event.key + "/stats", Constants.APPID);
+		return toGet;
+	}
+	
 	/**
 	 * Returns a list of the </code>Match</code> model for the specified key.
 	 * Some values may be null if they are not available on the server, or 
