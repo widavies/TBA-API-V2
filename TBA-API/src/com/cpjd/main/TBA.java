@@ -46,28 +46,22 @@ public class TBA {
 	 * @param year The year of the event (example: 2016)
 	 * @return An instance of the </code>Event</code> model
 	 */
-	@SuppressWarnings("rawtypes")
 	public Event getEvent(String key, int year) {
-		HashMap hash = (HashMap) doRequest(Constants.URL + "event/"+year+key, Constants.APPID);
-		Event event = new Event();
-		event.key = year + key;
-		event.name = (String) hash.get("name");
-		event.short_name = (String) hash.get("short_name");
-		event.event_code = (String) hash.get("event_code");
-		event.event_type_string = (String) hash.get("event_type_string");
-		event.event_district_string = (String) hash.get("event_district_string");
-		event.event_district = (Long) hash.get("event_district");
-		event.year = (Long) hash.get("year");
-		event.week = (Long) hash.get("week");
-		event.location = (String) hash.get("location");
-		event.venue_address = (String) hash.get("venue_address");
-		event.timezone = (String) hash.get("timezone");
-		event.website = (String) hash.get("website");
-		event.official = (boolean) hash.get("official");
-		if(Settings.GET_EVENT_MATCHES) event.matches = getMatches(key, year);
-		if(Settings.GET_EVENT_TEAMS) event.teams = getTeams(key, year);
-		if(Settings.GET_EVENT_AWARDS) event.awards = getAwards(key, year);
+		return parseEvent(doRequest(Constants.URL + "event/" + year + key, Constants.APPID));
+	}
+	
+	@SuppressWarnings("unchecked")
+	public HashMap<Integer, Double> getEventStats(Event event, String statKey) {
+		HashMap<String, Double> stat = ((HashMap<String,HashMap<String,Double>>) doRequest(Constants.URL + "event/" + event.year + event.key + "/stats", Constants.APPID)).get(statKey);
 		
+
+		HashMap<Integer, Double> toGet = new HashMap<Integer, Double>();
+		
+		for(String key : stat.keySet()){ // Transfer to the other Hashmap
+			toGet.put(Integer.parseInt(key), stat.get(key));
+		}
+		return toGet;
+
 		if(Settings.GET_EVENT_ALLIANCES) {
 			JSONArray alliances = (JSONArray) hash.get("alliances");
 			event.alliances = new Event.Alliance[alliances.size()];
@@ -140,6 +134,7 @@ public class TBA {
 			tempRanked.clear();
 		}
 		return event;
+
 	}
 	
 	/**
@@ -191,7 +186,19 @@ public class TBA {
 	public Team getTeam(int number) {
 		return parseTeam(doRequest(Constants.URL + "team/frc"+number, Constants.APPID));
 	}
-	
+	/**
+	 * Returns all the events a team has participated in 
+	 * for a given year in the form of Event[]
+	 */
+	public Event[] getTeamEvents(int teamNumber, int year) {
+		JSONArray events = (JSONArray)doRequest(Constants.URL + "team/frc" + teamNumber + "/" + year + "/events", Constants.APPID);
+		// Get all the events of a team in a given year.
+		Event[] toGet = new Event[events.size()];
+		for(int i = 0; i < toGet.length; i++) {
+			toGet[i] = parseEvent(events.get(i));
+		}
+		return toGet;
+	}
 	/**
 	 * Returns a single </code>Match</code> model 
 	 * @param year The event year (example: 2016)
@@ -259,6 +266,50 @@ public class TBA {
 		return m;
 	}
 	
+	@SuppressWarnings("rawtypes")
+	private Event parseEvent(Object object) {
+		Event event = new Event();
+		HashMap hash = (HashMap) object;
+
+		event.key = ((String) hash.get("key")).replaceAll("\\d",""); 
+		event.name = (String) hash.get("name");
+		event.short_name = (String) hash.get("short_name");
+		event.event_code = (String) hash.get("event_code");
+		event.event_type_string = (String) hash.get("event_type_string");
+		event.event_district_string = (String) hash.get("event_district_string");
+		event.event_district = (Long) hash.get("event_district");
+		event.year = (Long) hash.get("year");
+		//event.week = (Long) hash.get("week");
+		event.location = (String) hash.get("location");
+		event.venue_address = (String) hash.get("venue_address");
+		event.timezone = (String) hash.get("timezone");
+		event.website = (String) hash.get("website");
+		event.official = (boolean) hash.get("official");
+		if(Settings.GET_EVENT_MATCHES) event.matches = getMatches(event.key, (int)event.year);
+		if(Settings.GET_EVENT_TEAMS) event.teams = getTeams(event.key, (int)event.year);
+		if(Settings.GET_EVENT_AWARDS) event.awards = getAwards(event.key, (int)event.year);
+		
+		if(Settings.GET_EVENT_ALLIANCES) {
+			JSONArray alliances = (JSONArray) hash.get("alliances");
+			event.alliances = new Event.Alliance[alliances.size()];
+			
+			for(int i = 0; i < alliances.size(); i++) {
+				JSONObject obj = (JSONObject) alliances.get(i);
+				JSONArray declines = (JSONArray) obj.get("declines");
+				JSONArray picks = (JSONArray) obj.get("picks");
+				event.alliances[i].declines = new String[declines.size()];
+				for(int j = 0; j < event.alliances[i].declines.length; j++) {
+					 event.alliances[i].declines[j] = (String) declines.get(j);
+				}
+				event.alliances[i].picks = new String[picks.size()];
+				for(int j = 0; j < event.alliances[i].picks.length; j++) {
+					event.alliances[i].picks[j] = (String) picks.get(j);
+				}
+			}
+		}
+		
+		return event;
+	}
 	
 	@SuppressWarnings("rawtypes")
 	private Team parseTeam(Object object) {
@@ -276,6 +327,7 @@ public class TBA {
 		t.nickname = (String) hash.get("nickname");
 		t.rookie_year = (Long) hash.get("rookie_year");
 		t.motto = (String) hash.get("motto");
+		
 		
 		return t;
 	}
