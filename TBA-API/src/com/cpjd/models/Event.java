@@ -18,6 +18,10 @@ public class Event {
 	public boolean official;
 	
 	public Alliance[] alliances;
+	/**
+	 * If Settings.FIND_TEAM_RANKINGS is enabled, Team[] teams will be sorted by rank, where teams[0] is the best team
+	 * and teams[teams.length-1] is the worst team.
+	 */
 	public Team[] teams;
 	public Match[] matches;
 	public Award[] awards;
