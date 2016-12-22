@@ -17,199 +17,261 @@ import org.json.simple.parser.JSONParser;
 
 import com.cpjd.models.Award;
 import com.cpjd.models.Event;
-import com.cpjd.models.Event.Alliance;
 import com.cpjd.models.Match;
 import com.cpjd.models.Team;
-
 
 public class TBA {
 
 	private final JSONParser parser = new JSONParser();
-	
+
 	/**
-	 * REQUIRED  
-	 * Creates a new TBA object for getting data.
-	 * The three parameters are required for the identification header sent to the server.
-	 * @param id The team / person id
-	 * @param description App description
-	 * @param version App version
+	 * REQUIRED Creates a new TBA object for getting data. The three parameters
+	 * are required for the identification header sent to the server.
+	 * 
+	 * @param id
+	 *            The team / person id
+	 * @param description
+	 *            App description
+	 * @param version
+	 *            App version
 	 */
 	public static void setID(String id, String description, String version) {
 		Constants.APPID = id + ":" + description + ":" + version;
 	}
 
 	/**
-	 * Returns the </code>Event</code> model for the specified key.
-	 * Some values may be null if they are not available on the server, or 
-	 * they are disabled in the </code>Settings</code> class. 
-	 * @param key The event key (example: casd)
-	 * @param year The year of the event (example: 2016)
+	 * Returns the </code>Event</code> model for the specified key. Some values
+	 * may be null if they are not available on the server, or they are disabled
+	 * in the </code>Settings</code> class.
+	 * 
+	 * @param key
+	 *            The event key (example: casd)
+	 * @param year
+	 *            The year of the event (example: 2016)
 	 * @return An instance of the </code>Event</code> model
 	 */
+	@SuppressWarnings("rawtypes")
 	public Event getEvent(String key, int year) {
-		return parseEvent(doRequest(Constants.URL + "event/" + year + key, Constants.APPID));
-	}
-	
-	@SuppressWarnings("unchecked")
-	public HashMap<Integer, Double> getEventStats(Event event, String statKey) {
-		HashMap<String, Double> stat = ((HashMap<String,HashMap<String,Double>>) doRequest(Constants.URL + "event/" + event.year + event.key + "/stats", Constants.APPID)).get(statKey);
-		
-
-		HashMap<Integer, Double> toGet = new HashMap<Integer, Double>();
-		
-		for(String key : stat.keySet()){ // Transfer to the other Hashmap
-			toGet.put(Integer.parseInt(key), stat.get(key));
+		int i;
+		HashMap hash = (HashMap) this.doRequest(String.valueOf(Constants.URL) + "event/" + year + key, Constants.APPID);
+		Event event = new Event();
+		event.key = String.valueOf(year) + key;
+		event.name = (String) hash.get("name");
+		event.short_name = (String) hash.get("short_name");
+		event.event_code = (String) hash.get("event_code");
+		event.event_type_string = (String) hash.get("event_type_string");
+		event.event_district_string = (String) hash.get("event_district_string");
+		event.event_district = (Long) hash.get("event_district");
+		event.year = (Long) hash.get("year");
+		event.week = (Long) hash.get("week");
+		event.location = (String) hash.get("location");
+		event.venue_address = (String) hash.get("venue_address");
+		event.timezone = (String) hash.get("timezone");
+		event.website = (String) hash.get("website");
+		event.official = (Boolean) hash.get("official");
+		if(Settings.GET_EVENT_MATCHES) {
+			event.matches = this.getMatches(key, year);
 		}
-		return toGet;
-
+		if(Settings.GET_EVENT_TEAMS) {
+			event.teams = this.getTeams(key, year);
+		}
+		if(Settings.GET_EVENT_AWARDS) {
+			event.awards = this.getAwards(key, year);
+		}
 		if(Settings.GET_EVENT_ALLIANCES) {
 			JSONArray alliances = (JSONArray) hash.get("alliances");
 			event.alliances = new Event.Alliance[alliances.size()];
-			
-			for(int i = 0; i < alliances.size(); i++) {
-				JSONObject obj = (JSONObject) alliances.get(i);
-				JSONArray picks = null;
-				JSONArray declines = null;
+			i = 0;
+			JSONObject obj;
+			while (i < alliances.size()) {
+				JSONArray declines;
+				int j;
+				JSONArray picks;
+				obj = (JSONObject) alliances.get(i);
+				picks = null;
+				declines = null;
 				try {
-					 picks = (JSONArray) obj.get("picks");
-				} catch(Exception e) {}
-				try { 
-					declines = (JSONArray) obj.get("declines");
-				} catch(Exception e) {}
-				
-				Alliance alliance = new Event().new Alliance();
+					picks = (JSONArray) obj.get((Object) "picks");
+				} catch (Exception e) {
+					// empty catch block
+				}
+				try {
+					declines = (JSONArray) obj.get((Object) "declines");
+				} catch (Exception e) {
+					// empty catch block
+				}
+				Event e = new Event();
+				Event.Alliance alliance = e.new Alliance();
 				if(picks != null && picks.size() > 0) {
 					alliance.picks = new String[picks.size()];
-					for(int j = 0; j < alliance.picks.length; j++) {
+					j = 0;
+					while (j < alliance.picks.length) {
 						alliance.picks[j] = (String) picks.get(j);
+						++j;
 					}
-					
 				} else {
-					System.out.println("Event: No picks available for alliance: "+(i+1));
+					System.out.println("Event: No picks available for alliance: " + (i + 1));
 				}
 				if(declines != null && declines.size() > 0) {
 					alliance.declines = new String[declines.size()];
-					for(int j = 0; j < alliance.declines.length; j++) {
+					j = 0;
+					while (j < alliance.declines.length) {
 						alliance.declines[j] = (String) declines.get(j);
+						++j;
 					}
 				} else {
-					System.out.println("Event: No declines available for alliance: "+(i+1));
+					System.out.println("Event: No declines available for alliance: " + (i + 1));
 				}
-				
 				event.alliances[i] = alliance;
+				++i;
 			}
 		}
 		if(Settings.FIND_TEAM_RANKINGS) {
-			JSONArray ranks = (JSONArray) doRequest(Constants.URL +"event/"+year+key+"/rankings", Constants.APPID);
-			for(int i = 1; i < ranks.size(); i++) {
-				JSONArray obj = (JSONArray) ranks.get(i);
-				for(int j = 0; j < event.teams.length; j++) {
-					if(event.teams[j].team_number == Integer.parseInt((String)obj.get(1))) {
-						event.teams[j].rank = Integer.parseInt((String)obj.get(0));
-						event.teams[j].rankingScore = Double.parseDouble((String)obj.get(2));
-						event.teams[j].auto = Double.parseDouble((String)obj.get(3));
-						event.teams[j].scaleOrChallenge = Double.parseDouble((String)obj.get(4));
-						event.teams[j].goals = Double.parseDouble((String)obj.get(5));
-						event.teams[j].defense = Double.parseDouble((String)obj.get(6));
+			int j;
+			JSONArray ranks = (JSONArray) this.doRequest(String.valueOf(Constants.URL) + "event/" + year + key + "/rankings", Constants.APPID);
+			i = 1;
+			JSONArray obj;
+			while (i < ranks.size()) {
+				obj = (JSONArray) ranks.get(i);
+				j = 0;
+				while (j < event.teams.length) {
+					if(event.teams[j].team_number == (long) Integer.parseInt((String) obj.get(1))) {
+						event.teams[j].rank = Integer.parseInt((String) obj.get(0));
+						event.teams[j].rankingScore = Double.parseDouble((String) obj.get(2));
+						event.teams[j].auto = Double.parseDouble((String) obj.get(3));
+						event.teams[j].scaleOrChallenge = Double.parseDouble((String) obj.get(4));
+						event.teams[j].goals = Double.parseDouble((String) obj.get(5));
+						event.teams[j].defense = Double.parseDouble((String) obj.get(6));
 						event.teams[j].record = (String) obj.get(7);
-						event.teams[j].played = Integer.parseInt((String)obj.get(8));	
+						event.teams[j].played = Integer.parseInt((String) obj.get(8));
 					}
+					++j;
 				}
+				++i;
 			}
-			
 			ArrayList<Team> tempRanked = new ArrayList<Team>();
-			for(int i = 0; i < event.teams.length; i++) {
-				for(int j = 0; j < event.teams.length; j++) {
-					if(event.teams[j].rank == (i + 1)) {
+			int i2 = 0;
+			while (i2 < event.teams.length) {
+				j = 0;
+				while (j < event.teams.length) {
+					if(event.teams[j].rank == i2 + 1) {
 						tempRanked.add(event.teams[j]);
 					}
+					++j;
 				}
+				++i2;
 			}
-			
 			Team[] ranked = new Team[tempRanked.size()];
-			for(int i = 0; i < tempRanked.size(); i++) {
-				ranked[i] = tempRanked.get(i);
+			int i3 = 0;
+			while (i3 < tempRanked.size()) {
+				ranked[i3] = (Team) tempRanked.get(i3);
+				++i3;
 			}
 			event.teams = ranked;
 			tempRanked.clear();
 		}
 		return event;
-
 	}
-	
+
+	@SuppressWarnings("unchecked")
+	public HashMap<Integer, Double> getEventStats(Event event, String statKey) {
+		HashMap<String, Double> stat = ((HashMap<String, HashMap<String, Double>>) doRequest(
+				Constants.URL + "event/" + event.year + event.key + "/stats", Constants.APPID)).get(statKey);
+
+		HashMap<Integer, Double> toGet = new HashMap<Integer, Double>();
+
+		for (String key : stat.keySet()) { // Transfer to the other Hashmap
+			toGet.put(Integer.parseInt(key), stat.get(key));
+		}
+		return toGet;
+	}
+
 	/**
 	 * Returns a list of the </code>Match</code> model for the specified key.
-	 * Some values may be null if they are not available on the server, or 
-	 * they are disabled in the </code>Settings</code> class. 
-	 * @param key The event key (example: casd)
-	 * @param year The event year (example: 2016) 
+	 * Some values may be null if they are not available on the server, or they
+	 * are disabled in the </code>Settings</code> class.
+	 * 
+	 * @param key
+	 *            The event key (example: casd)
+	 * @param year
+	 *            The event year (example: 2016)
 	 * @return An array of type </code>Match</code>
 	 */
 	public Match[] getMatches(String key, int year) {
-		JSONArray matches = (JSONArray) doRequest(Constants.URL + "event/"+year+key+"/matches", Constants.APPID);
-		
+		JSONArray matches = (JSONArray) doRequest(Constants.URL + "event/" + year + key + "/matches", Constants.APPID);
+
 		Match[] toGet = new Match[matches.size()];
-		
-		for(int i = 0; i < toGet.length; i++) {
+
+		for (int i = 0; i < toGet.length; i++) {
 			toGet[i] = parseMatch(matches.get(i));
 		}
-		
+
 		return toGet;
 	}
-	
+
 	/**
 	 * Returns a list of the </code>Team</code> model for the specified key.
-	 * Some values may be null if they are not available on the server, or 
-	 * they are disabled in the </code>Settings</code> class. 
-	 * @param key The event key (example: casd)
-	 * @param year The event year (example: 2016) 
+	 * Some values may be null if they are not available on the server, or they
+	 * are disabled in the </code>Settings</code> class.
+	 * 
+	 * @param key
+	 *            The event key (example: casd)
+	 * @param year
+	 *            The event year (example: 2016)
 	 * @return An array of type </code>Match</code>
 	 */
 	public Team[] getTeams(String key, int year) {
-		JSONArray teams = (JSONArray) doRequest(Constants.URL + "event/"+year+key+"/teams", Constants.APPID);
-		
+		JSONArray teams = (JSONArray) doRequest(Constants.URL + "event/" + year + key + "/teams", Constants.APPID);
+
 		Team[] toGet = new Team[teams.size()];
-		
-		for(int i = 0; i < toGet.length; i++) {
+
+		for (int i = 0; i < toGet.length; i++) {
 			toGet[i] = parseTeam(teams.get(i));
 		}
-		
-		
+
 		return toGet;
 	}
-	
+
 	/**
-	 * Returns a single </code>Team</code> model 
-	 * @param number The team's frc number (example: 4859)
+	 * Returns a single </code>Team</code> model
+	 * 
+	 * @param number
+	 *            The team's frc number (example: 4859)
 	 * @return </code>Team</code> model
 	 */
 	public Team getTeam(int number) {
-		return parseTeam(doRequest(Constants.URL + "team/frc"+number, Constants.APPID));
+		return parseTeam(doRequest(Constants.URL + "team/frc" + number, Constants.APPID));
 	}
+
 	/**
-	 * Returns all the events a team has participated in 
-	 * for a given year in the form of Event[]
+	 * Returns all the events a team has participated in for a given year in the
+	 * form of Event[]
 	 */
 	public Event[] getTeamEvents(int teamNumber, int year) {
-		JSONArray events = (JSONArray)doRequest(Constants.URL + "team/frc" + teamNumber + "/" + year + "/events", Constants.APPID);
+		JSONArray events = (JSONArray) doRequest(Constants.URL + "team/frc" + teamNumber + "/" + year + "/events", Constants.APPID);
 		// Get all the events of a team in a given year.
 		Event[] toGet = new Event[events.size()];
-		for(int i = 0; i < toGet.length; i++) {
+		for (int i = 0; i < toGet.length; i++) {
 			toGet[i] = parseEvent(events.get(i));
 		}
 		return toGet;
 	}
+
 	/**
-	 * Returns a single </code>Match</code> model 
-	 * @param year The event year (example: 2016)
-	 * @param key The event key (example: casd)
-	 * @param matchKey The match key (example: f1m1)
+	 * Returns a single </code>Match</code> model
+	 * 
+	 * @param year
+	 *            The event year (example: 2016)
+	 * @param key
+	 *            The event key (example: casd)
+	 * @param matchKey
+	 *            The match key (example: f1m1)
 	 * @return </code>Match</code> model
 	 */
 	public Match getMatch(int year, String key, String matchKey) {
-		return parseMatch(doRequest(Constants.URL + "match/"+year+key+"_"+key, Constants.APPID));
+		return parseMatch(doRequest(Constants.URL + "match/" + year + key + "_" + key, Constants.APPID));
 	}
-	
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Match parseMatch(Object object) {
 		Match m = new Match();
@@ -222,27 +284,27 @@ public class TBA {
 		m.time_string = (String) hash.get("time_string");
 		try {
 			m.time = Long.parseLong(hash.get("time").toString());
-		} catch(Exception e) {}
+		} catch (Exception e) {
+		}
 		JSONObject alliances = (JSONObject) hash.get("alliances");
-		
+
 		JSONObject blueTeam = (JSONObject) alliances.get("blue");
 		JSONObject redTeam = (JSONObject) alliances.get("red");
 
-		m.blueScore = (Long)blueTeam.get("score");
-		m.redScore = (Long)redTeam.get("score");
-		
+		m.blueScore = (Long) blueTeam.get("score");
+		m.redScore = (Long) redTeam.get("score");
+
 		m.blueTeams = new String[3];
 		m.redTeams = new String[3];
 
-        String[] redTeamTokens = redTeam.get("teams").toString().replace("\"", "").replace("[", "").replace("]", "").split(",");
-        String[] blueTeamTokens = blueTeam.get("teams").toString().replace("\"", "").replace("[", "").replace("]", "").split(",");
+		String[] redTeamTokens = redTeam.get("teams").toString().replace("\"", "").replace("[", "").replace("]", "").split(",");
+		String[] blueTeamTokens = blueTeam.get("teams").toString().replace("\"", "").replace("[", "").replace("]", "").split(",");
 
-
-        for(int j = 0; j < 3; j++) {
-            m.blueTeams[j] = blueTeamTokens[j];
-            m.redTeams[j] = redTeamTokens[j];
+		for (int j = 0; j < 3; j++) {
+			m.blueTeams[j] = blueTeamTokens[j];
+			m.redTeams[j] = redTeamTokens[j];
 		}
-		
+
 		try {
 			JSONObject score_breakdown = (JSONObject) hash.get("score_breakdown");
 			JSONObject red = (JSONObject) score_breakdown.get("red");
@@ -260,18 +322,18 @@ public class TBA {
 				m.redValues[i] = red.get(key).toString();
 				m.blueValues[i] = blue.get(key).toString();
 			}
-		} catch(Exception e) {
-			
+		} catch (Exception e) {
+
 		}
 		return m;
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	private Event parseEvent(Object object) {
 		Event event = new Event();
 		HashMap hash = (HashMap) object;
 
-		event.key = ((String) hash.get("key")).replaceAll("\\d",""); 
+		event.key = ((String) hash.get("key")).replaceAll("\\d", "");
 		event.name = (String) hash.get("name");
 		event.short_name = (String) hash.get("short_name");
 		event.event_code = (String) hash.get("event_code");
@@ -279,38 +341,38 @@ public class TBA {
 		event.event_district_string = (String) hash.get("event_district_string");
 		event.event_district = (Long) hash.get("event_district");
 		event.year = (Long) hash.get("year");
-		//event.week = (Long) hash.get("week");
+		// event.week = (Long) hash.get("week");
 		event.location = (String) hash.get("location");
 		event.venue_address = (String) hash.get("venue_address");
 		event.timezone = (String) hash.get("timezone");
 		event.website = (String) hash.get("website");
 		event.official = (boolean) hash.get("official");
-		if(Settings.GET_EVENT_MATCHES) event.matches = getMatches(event.key, (int)event.year);
-		if(Settings.GET_EVENT_TEAMS) event.teams = getTeams(event.key, (int)event.year);
-		if(Settings.GET_EVENT_AWARDS) event.awards = getAwards(event.key, (int)event.year);
-		
+		if(Settings.GET_EVENT_MATCHES) event.matches = getMatches(event.key, (int) event.year);
+		if(Settings.GET_EVENT_TEAMS) event.teams = getTeams(event.key, (int) event.year);
+		if(Settings.GET_EVENT_AWARDS) event.awards = getAwards(event.key, (int) event.year);
+
 		if(Settings.GET_EVENT_ALLIANCES) {
 			JSONArray alliances = (JSONArray) hash.get("alliances");
 			event.alliances = new Event.Alliance[alliances.size()];
-			
-			for(int i = 0; i < alliances.size(); i++) {
+
+			for (int i = 0; i < alliances.size(); i++) {
 				JSONObject obj = (JSONObject) alliances.get(i);
 				JSONArray declines = (JSONArray) obj.get("declines");
 				JSONArray picks = (JSONArray) obj.get("picks");
 				event.alliances[i].declines = new String[declines.size()];
-				for(int j = 0; j < event.alliances[i].declines.length; j++) {
-					 event.alliances[i].declines[j] = (String) declines.get(j);
+				for (int j = 0; j < event.alliances[i].declines.length; j++) {
+					event.alliances[i].declines[j] = (String) declines.get(j);
 				}
 				event.alliances[i].picks = new String[picks.size()];
-				for(int j = 0; j < event.alliances[i].picks.length; j++) {
+				for (int j = 0; j < event.alliances[i].picks.length; j++) {
 					event.alliances[i].picks[j] = (String) picks.get(j);
 				}
 			}
 		}
-		
+
 		return event;
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	private Team parseTeam(Object object) {
 		Team t = new Team();
@@ -327,26 +389,24 @@ public class TBA {
 		t.nickname = (String) hash.get("nickname");
 		t.rookie_year = (Long) hash.get("rookie_year");
 		t.motto = (String) hash.get("motto");
-		
-		
+
 		return t;
 	}
-	
-	
+
 	@SuppressWarnings("rawtypes")
 	private Award[] getAwards(String key, int year) {
-		JSONArray awards = (JSONArray) doRequest(Constants.URL + "event/"+year+key+"/awards", Constants.APPID);
-		
+		JSONArray awards = (JSONArray) doRequest(Constants.URL + "event/" + year + key + "/awards", Constants.APPID);
+
 		Award[] toGet = new Award[awards.size()];
-		
-		for(int i = 0; i < toGet.length; i++) {
+
+		for (int i = 0; i < toGet.length; i++) {
 			Award m = new Award();
 			HashMap hash = (HashMap) awards.get(i);
 			m.name = (String) hash.get("name");
 			m.award_type = (Long) hash.get("award_type");
 			m.event_key = (String) hash.get("event_key");
 			m.year = (Long) hash.get("year");
-			
+
 			try {
 				JSONArray recipient_list = (JSONArray) hash.get("recipient_list");
 				m.recipient_list = new Award.Recipient[recipient_list.size()];
@@ -360,10 +420,10 @@ public class TBA {
 			}
 			toGet[i] = m;
 		}
-		
+
 		return toGet;
 	}
-	
+
 	private Object doRequest(String targetURL, String appID) {
 		HttpURLConnection connection = null;
 
@@ -373,9 +433,8 @@ public class TBA {
 			connection.setRequestMethod("GET");
 			connection.setRequestProperty("User-Agent", "TBA-API");
 			connection.setRequestProperty("X-TBA-App-Id", appID);
-            connection.setRequestProperty("Content-Type",
-                    "application/x-www-form-urlencoded");
-            connection.setRequestProperty("charset", "utf-8");
+			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			connection.setRequestProperty("charset", "utf-8");
 			connection.setUseCaches(false);
 
 			InputStream is = connection.getInputStream();
@@ -389,14 +448,15 @@ public class TBA {
 			rd.close();
 			return parser.parse(response.toString());
 		} catch (FileNotFoundException e) {
-            try {
-                System.err.println("DATA REQUEST FAILED: "+e.getMessage()+"RESPONSE CODE: "+connection.getResponseCode()+connection.getResponseMessage());
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-            e.printStackTrace();
+			try {
+				System.err.println("DATA REQUEST FAILED: " + e.getMessage() + "RESPONSE CODE: " + connection.getResponseCode()
+						+ connection.getResponseMessage());
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
 			return null;
-		} catch(Exception e) {
+		} catch (Exception e) {
 			System.err.println("Data request failed. Check your connection / verify correct data key. If the issue persists, contact the developer");
 			e.printStackTrace();
 			return null;
