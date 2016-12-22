@@ -9,11 +9,21 @@ Download the .jar file from https://github.com/techguy9984/TBA-API/releases.
 
 Add the jar as a dependency in your project.
 
+# Dependencies
+This API requires the use of JSON-Simple. Make sure you download the .jar file at https://code.google.com/archive/p/json-simple/ and add the jar as a dependency.
+
 # Usage
-To use the API, first, set the ID statically with three variables:  
+To use the API, first, import the project:
+```java
+import com.cpjd.main.*;
+import com.cpjd.models.*;
+```
+
+Next, set the ID statically with three variables:  
 ```java
 TBA.setID("id","description","version");
 ```
+For more information on the id, go to https://www.thebluealliance.com/apidocs
 Then, create a TBA object:  
 ```java
 TBA tba = new TBA();
