@@ -15,6 +15,7 @@ import com.cpjd.models.Team;
  *
  */
 public class Test {
+	
 	public static void printRobot(Robot robot) {
 		System.out.println("NEW ROBOT");
 		System.out.println(robot.key);
