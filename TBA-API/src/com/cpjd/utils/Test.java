@@ -15,7 +15,6 @@ import com.cpjd.models.Team;
 public class Test {
 	
 	public static void printRobot(Robot robot) {
-		System.out.println("NEW ROBOT");
 		System.out.println(robot.key);
 		System.out.println(robot.name);
 		System.out.println(robot.team_key);
@@ -23,7 +22,6 @@ public class Test {
 	}
 	
 	public static void printMedia(Media media) {
-		System.out.println("NEW MEDIA");
 		System.out.println(media.type);
 		System.out.println(media.foreign_key);
 		System.out.println(media.preferred);
@@ -35,7 +33,6 @@ public class Test {
 	}
 	
 	public static void printMatch(Match match) {
-		System.out.println("NEW MATCHHHHHHHHHHHHH");
 		System.out.println(match.key);
 		System.out.println(match.comp_level);
 		System.out.println(match.set_number);
@@ -66,7 +63,6 @@ public class Test {
 	}
 	
 	public static void printEvent(Event event) {
-		System.out.println("START EVENT");
 		System.out.println(event.key);
 		System.out.println(event.name);
 		System.out.println(event.short_name);
