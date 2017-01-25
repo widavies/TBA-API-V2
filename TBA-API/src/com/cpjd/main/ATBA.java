@@ -18,15 +18,40 @@ import com.cpjd.requests.MatchRequest;
 import com.cpjd.requests.TeamRequest;
 
 /**
- * Use the TBA class for pulling all your data. 
+ * ATBA - (Advanced) TBA - Just an alternative to the TBA class but has more potential for things breaking if you're not careful.
+ * This class is for more advanced users. Note, if you don't pass in the parameter in the constructor and it's left null / blank,
+ * accessing a method that relys on the variable will result in an error!
  * 
- * All data requests are divided into four classes: DistrictRequest, EventRequest, MatchRequest, and TeamRequest.
- * You can also use those classes directly if you'd like, otherwise, just use this class.
+ * Use this class if you're gonna be pulling a lot more information, and would like to make use of construtors.
  * 
+ * Some methods will still require parameters every time they are called.
  * @author Will Davies
  *
  */
-public class TBA {
+public class ATBA {
+	
+	private int teamNumber;
+	private int year;
+	private String eventKey;
+	private String matchKey;
+	private String districtShort;
+	
+	public ATBA(int teamNumber, int year, String eventKey, String matchKey, String districtShort) {
+		this.teamNumber = teamNumber; this.year = year; this.eventKey = eventKey; this.matchKey = matchKey; this.districtShort = districtShort;
+	}
+	public ATBA(int teamNumber, int year) {
+		this.year = year; this.teamNumber = teamNumber;
+	}
+	public ATBA(int year, String eventKey, int teamNumber) {
+		this.year = year; this.teamNumber = teamNumber; this.eventKey = eventKey;
+	}
+	public ATBA(int teamNumber) {
+		this.teamNumber = teamNumber;
+	}
+	public ATBA(String eventKey, int year) {
+		this.eventKey = eventKey; this.year = year;
+	}
+	
 	
 	/**
 	 * REQUIRED Creates a new TBA object for getting data. The three parameters
@@ -55,7 +80,7 @@ public class TBA {
 	 * @param teamNumber The team's frc number (example: 4859)
 	 * @return <b>Team</b> model
 	 */
-	public Team getTeam(int teamNumber) {
+	public Team getTeam() {
 		return new TeamRequest().getTeam(teamNumber);
 	}
 
@@ -65,7 +90,7 @@ public class TBA {
 	 * @param teamNumber The team's frc number (example: 4850)
 	 * @return An array of the <b>Event</b> model
 	 */
-	public Event[] getTeamEvents(int teamNumber, int year) {
+	public Event[] getTeamEvents() {
 		return new TeamRequest().getTeamEvents(teamNumber, year);
 	}
 	
@@ -76,7 +101,7 @@ public class TBA {
 	 * @param teamNumber The team's frc number (example: 4859)
 	 * @return An array of the <b>Award</b> model
 	 */
-	public Award[] getTeamEventAwards(int year, String eventKey, int teamNumber) {
+	public Award[] getTeamEventAwards() {
 		return new TeamRequest().getTeamEventAwards(year, eventKey, teamNumber);
 	}
 	
@@ -87,7 +112,7 @@ public class TBA {
 	 * @param teamNumber The team's frc number (example: 4859)
 	 * @return An array of the <b>Match</b> model
 	 */
-	public Match[] getTeamEventMatches(int year, String eventKey, int teamNumber) {
+	public Match[] getTeamEventMatches() {
 		return new TeamRequest().getTeamEventMatches(year, eventKey, teamNumber);
 	}
 
@@ -96,7 +121,7 @@ public class TBA {
 	 * @param teamNumber The team's frc number (example: 4859)
 	 * @return An array of type <b>long</b>, each element is a year
 	 */
-	public long[] getYearsParticipated(int teamNumber) {
+	public long[] getYearsParticipated() {
 		return new TeamRequest().getYearsParticipated(teamNumber);
 	}
 
@@ -106,7 +131,7 @@ public class TBA {
 	 * @param year The year to get media from (example: 2017)
 	 * @return An array of the <b>Media</b> model
 	 */
-	public Media[] getMedia(int teamNumber, int year) {
+	public Media[] getMedia() {
 		return new TeamRequest().getMedia(teamNumber, year);
 	}
 
@@ -117,7 +142,7 @@ public class TBA {
 	 * @param teamNumber The team's frc number (example: 4859)
 	 * @return An array of the <b>Event</b> model
 	 */
-	public Event[] getTeamHistoryEvents(int teamNumber) {
+	public Event[] getTeamHistoryEvents() {
 		return new TeamRequest().getTeamHistoryEvents(teamNumber);
 	}
 
@@ -126,7 +151,7 @@ public class TBA {
 	 * @param teamNumber The team's frc number (example: 4859)
 	 * @return An array of the <b>Award</b> model
 	 */
-	public Award[] getTeamHistoryAwards(int teamNumber) {
+	public Award[] getTeamHistoryAwards() {
 		return new TeamRequest().getTeamHistoryAwards(teamNumber);
 	}
 	
@@ -135,7 +160,7 @@ public class TBA {
 	 * @param teamNumber The team's frc number (example: 4859)
 	 * @return An array of the <b>Robot</b> model
 	 */
-	public Robot[] getTeamHistoryRobots(int teamNumber) {
+	public Robot[] getTeamHistoryRobots() {
 		return new TeamRequest().getTeamHistoryRobots(teamNumber);
 	}
 
@@ -144,7 +169,7 @@ public class TBA {
 	 * @param teamNumber The team's frc number (example: 4859)
 	 * @return An array of type <b>String</b>. Each element is a year plus a region 
 	 */
-	public String[] getTeamDistricts(int teamNumber) {
+	public String[] getTeamDistricts() {
 		return new TeamRequest().getTeamDistricts(teamNumber);
 	}
 
@@ -154,7 +179,7 @@ public class TBA {
 	 * @param year A year (example: 2017)
 	 * @return An array of the <b>Event</b> model
 	 */
-	public Event[] getEvents(int year) {
+	public Event[] getEvents() {
 		return new EventRequest().getEvents(year);
 	}
 	/**
@@ -166,7 +191,7 @@ public class TBA {
 	 * @param year The year of the event (example: 2017)
 	 * @return <b>Event</b> model
 	 */
-	public Event getEvent(String eventKey, int year) {
+	public Event getEvent() {
 		return new EventRequest().getEvent(eventKey, year);
 	}
 	/**
@@ -178,7 +203,7 @@ public class TBA {
 	 * @param year The event year (example: 2017)
 	 * @return An array of the <b>Team</b> model
 	 */
-	public Team[] getTeams(String eventKey, int year) {
+	public Team[] getTeams() {
 		return new EventRequest().getTeams(eventKey, year);
 	}
 	/**
@@ -190,7 +215,7 @@ public class TBA {
 	 * @param year The event year (example: 2017)
 	 * @return An array of the <b>Match</b> model
 	 */
-	public Match[] getMatches(String eventKey, int year) {
+	public Match[] getMatches() {
 		return new EventRequest().getMatches(eventKey, year);
 	}
 	
@@ -210,7 +235,7 @@ public class TBA {
 	 * @param year The year that the event occured (example: 2017)
 	 * @return An array of the <b>Ranking</b> model
 	 */
-	public Ranking[] getEventRankings(String eventKey, int year) {
+	public Ranking[] getEventRankings() {
 		return new EventRequest().getEventRankings(eventKey, year);
 	}
 	
@@ -220,7 +245,7 @@ public class TBA {
 	 * @param year The year that the event occured (example: 2017)
 	 * @return An arry of the <b>Award</b> model
 	 */
-	public Award[] getEventAwards(String eventKey, int year) {
+	public Award[] getEventAwards() {
 		return new EventRequest().getEventAwards(eventKey, year);
 	}
 	
@@ -230,7 +255,7 @@ public class TBA {
 	 * @param year  The year that the event occured (example: 2017)
 	 * @return An array of the <b>EventPoint</b> model
 	 */
-	public EventPoint[] getEventDistrictPoints(String eventKey, int year) {
+	public EventPoint[] getEventDistrictPoints() {
 		return new EventRequest().getEventDistrictPoints(eventKey, year);
 	}
 	
@@ -243,7 +268,7 @@ public class TBA {
 	 * @param matchKey The match key (example: f1m1)
 	 * @return A <b>Match</b> model
 	 */
-	public Match getMatch(int year, String eventKey, String matchKey) {
+	public Match getMatch() {
 		return new MatchRequest().getMatch(year, eventKey, matchKey);
 	}
 	/* DISTRICT REQUEST METHODS */
@@ -252,7 +277,7 @@ public class TBA {
 	 * @param year A year (example: 2017)
 	 * @return An array of the <b>District</b> model
 	 */
-	public District[] getDistricts(int year) {
+	public District[] getDistricts() {
 		return new DistrictRequest().getDistricts(year);
 	}
 	/**
@@ -261,7 +286,7 @@ public class TBA {
 	 * @param year The district's year (example: 2017)
 	 * @return An array of the <b>Event</b> model
 	 */
-	public Event[] getDistrictEvents(String districtShort, int year) {
+	public Event[] getDistrictEvents() {
 		return new DistrictRequest().getDistrictEvents(districtShort, year);
 	}
 	
@@ -271,7 +296,7 @@ public class TBA {
 	 * @param year The district's year (example: 2017)
 	 * @return An array of the <b>DistrictRanking</b> model
 	 */
-	public DistrictRanking[] getDistrictRankings(String districtShort, int year) {
+	public DistrictRanking[] getDistrictRankings() {
 		return new DistrictRequest().getDistrictRankings(districtShort, year);
 	}
 	
@@ -281,8 +306,25 @@ public class TBA {
 	 * @param year  The district's year (example: 2017)
 	 * @return A array of the <b>Team</b> model
 	 */
-	public Team[] getDistrictTeams(String districtShort, int year) {
+	public Team[] getDistrictTeams() {
 		return new DistrictRequest().getDistrictTeams(districtShort, year);
+	}
+	
+	// Setters for information
+	public void setTeamNumber(int teamNumber) {
+		this.teamNumber = teamNumber;
+	}
+	public void setYear(int year) {
+		this.year = year;
+	}
+	public void setEventKey(String eventKey) {
+		this.eventKey = eventKey;
+	}
+	public void setMatchKey(String matchKey) {
+		this.matchKey = matchKey;
+	}
+	public void setDistrictShort(String districtShort) {
+		this.districtShort = districtShort;
 	}
 	
 }
