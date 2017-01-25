@@ -14,7 +14,7 @@ it seems like it's easiest just to use a .jar.
 This API requires the use of JSON-Simple. Make sure you download the .jar file at https://code.google.com/archive/p/json-simple/ and add the jar as a dependency as well.
 
 # Tutorial
-I'm in the process of creating an in-depth tutorial on how to use the API. Find it at https://www.github.com/techguy9984/TBA-API/wiki.
+Find it at https://www.github.com/techguy9984/TBA-API/wiki.
 The API is designed to be easy to use and fairly idiot-proof (no offense, I wish everyone designed their software like that).
 
 # Other
