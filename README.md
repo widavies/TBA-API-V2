@@ -1,54 +1,21 @@
 # TBA-API
 A Java API for pulling robotics data from www.thebluealliance.com.
 
-I made this API because none of the other Java ones were working for me. I hope that this
+I made this API because none of the other Java APIs were working for me. I hope that this
 will be the last place you have to go for your TBA API needs. Thanks!
 
 # Installation
 Download the .jar file from https://github.com/techguy9984/TBA-API/releases.
 
-Add the jar as a dependency in your project.
+Add the jar as a dependency in your project. Let me know if you'd like Maven or Gradle download support, although currently,
+it seems like it's easiest just to use a .jar.
 
 # Dependencies
-This API requires the use of JSON-Simple. Make sure you download the .jar file at https://code.google.com/archive/p/json-simple/ and add the jar as a dependency.
+This API requires the use of JSON-Simple. Make sure you download the .jar file at https://code.google.com/archive/p/json-simple/ and add the jar as a dependency as well.
 
-# Usage
-To use the API, first, import the project:
-```java
-import com.cpjd.main.*;
-import com.cpjd.models.*;
-```
-
-Next, set the ID statically with three variables:  
-```java
-TBA.setID("id","description","version");
-```
-For more information on the id, go to https://www.thebluealliance.com/apidocs
-Then, create a TBA object:  
-```java
-TBA tba = new TBA();
-```
-Pull data from TBA by calling the respective method within TBA.
-For example, to get an event you would do:
-```java
-Event e = tba.getEvent("casd",2016);
-```
-
-Pulling data will return it's respective *model* such as Event, Team, Match, etc.
-Access the model's data by calling the public variable. Example: 
-```java 
-team.team_number
-```
-
-Not all data will be automatically added. To configure whether to download extra data,
-see the *Settings* class and change the booleans statically, such as 
-```java 
-Settings.GET_EVENT_ALLIANCE = true; // Gets the alliance picks and declines in the event.
-Settings.FIND_TEAM_RANKINGS = true; // Sorts the Event.Teams[] array by the team's rank within the event. Fills out 8 more variables in the Team model.
-Settings.GET_EVENT_MATCHES = true; // Whether to get matches when pulling an event.
-Settings.GET_EVENT_TEAMS = true; // Whether to get teams when pulling an event. 
-Settings.GET_EVENT_AWARDS = true; // Whether to get awards won when pulling an event.
-```
+# Tutorial
+I'm in the process of creating an in-depth tutorial on how to use the API. Find it at https://www.github.com/techguy9984/TBA-API/wiki.
+The API is designed to be easy to use and fairly idiot-proof (no offense, I wish everyone designed their software like that).
 
 # Other
 Report any bugs or suggestions to wdavies973@gmail.com
