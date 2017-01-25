@@ -17,4 +17,11 @@ public class Match {
 	public String[] scorableItems;
 	public String[] redValues;
 	public String[] blueValues;
+	
+	public Video[] videos;
+	
+	public class Video {
+		public String type;
+		public String key;
+	}
 }

@@ -1,467 +1,288 @@
 package com.cpjd.main;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import com.cpjd.models.Award;
 import com.cpjd.models.Event;
 import com.cpjd.models.Match;
+import com.cpjd.models.Media;
+import com.cpjd.models.Robot;
 import com.cpjd.models.Team;
+import com.cpjd.models.other.District;
+import com.cpjd.models.other.DistrictRanking;
+import com.cpjd.models.other.EventPoint;
+import com.cpjd.models.other.Ranking;
+import com.cpjd.requests.DistrictRequest;
+import com.cpjd.requests.EventRequest;
+import com.cpjd.requests.MatchRequest;
+import com.cpjd.requests.TeamRequest;
 
+/**
+ * Use the TBA class for pulling all your data. 
+ * 
+ * All data requests are divided into four classes: DistrictRequest, EventRequest, MatchRequest, and TeamRequest.
+ * You can also use those classes directly if you'd like, otherwise, just use this class.
+ * 
+ * @author Will Davies
+ *
+ */
 public class TBA {
-
-	private final JSONParser parser = new JSONParser();
 
 	/**
 	 * REQUIRED Creates a new TBA object for getting data. The three parameters
 	 * are required for the identification header sent to the server.
 	 * 
-	 * @param id
-	 *            The team / person id
-	 * @param description
-	 *            App description
-	 * @param version
-	 *            App version
+	 * @param id The team / person id
+	 * @param description  App description
+	 * @param version App version
 	 */
 	public static void setID(String id, String description, String version) {
 		Constants.APPID = id + ":" + description + ":" + version;
 	}
-
+	
+	/* TEAM REQUEST METHODS */
 	/**
-	 * Returns the </code>Event</code> model for the specified key. Some values
-	 * may be null if they are not available on the server, or they are disabled
-	 * in the </code>Settings</code> class.
-	 * 
-	 * @param key
-	 *            The event key (example: casd)
-	 * @param year
-	 *            The year of the event (example: 2016)
-	 * @return An instance of the </code>Event</code> model
+	 * A page of teams, zero-indexed. Each page consists of teams whose numbers start at start = 500 * page_num and end at end = start + 499, inclusive.
+	 * @param pageNumber The aforementioned page from which to get the team list. Examples: 0, 4, 7
+	 * @return An array of the <b>Team</b> model
 	 */
-	@SuppressWarnings("rawtypes")
-	public Event getEvent(String key, int year) {
-		int i;
-		HashMap hash = (HashMap) this.doRequest(String.valueOf(Constants.URL) + "event/" + year + key, Constants.APPID);
-		Event event = new Event();
-		event.key = String.valueOf(year) + key;
-		event.name = (String) hash.get("name");
-		event.short_name = (String) hash.get("short_name");
-		event.event_code = (String) hash.get("event_code");
-		event.event_type_string = (String) hash.get("event_type_string");
-		event.event_district_string = (String) hash.get("event_district_string");
-		event.event_district = (Long) hash.get("event_district");
-		event.year = (Long) hash.get("year");
-		event.week = (Long) hash.get("week");
-		event.location = (String) hash.get("location");
-		event.venue_address = (String) hash.get("venue_address");
-		event.timezone = (String) hash.get("timezone");
-		event.website = (String) hash.get("website");
-		event.official = (Boolean) hash.get("official");
-		if(Settings.GET_EVENT_MATCHES) {
-			event.matches = this.getMatches(key, year);
-		}
-		if(Settings.GET_EVENT_TEAMS) {
-			event.teams = this.getTeams(key, year);
-		}
-		if(Settings.GET_EVENT_AWARDS) {
-			event.awards = this.getAwards(key, year);
-		}
-		if(Settings.GET_EVENT_ALLIANCES) {
-			JSONArray alliances = (JSONArray) hash.get("alliances");
-			event.alliances = new Event.Alliance[alliances.size()];
-			i = 0;
-			JSONObject obj;
-			while (i < alliances.size()) {
-				JSONArray declines;
-				int j;
-				JSONArray picks;
-				obj = (JSONObject) alliances.get(i);
-				picks = null;
-				declines = null;
-				try {
-					picks = (JSONArray) obj.get((Object) "picks");
-				} catch (Exception e) {
-					// empty catch block
-				}
-				try {
-					declines = (JSONArray) obj.get((Object) "declines");
-				} catch (Exception e) {
-					// empty catch block
-				}
-				Event e = new Event();
-				Event.Alliance alliance = e.new Alliance();
-				if(picks != null && picks.size() > 0) {
-					alliance.picks = new String[picks.size()];
-					j = 0;
-					while (j < alliance.picks.length) {
-						alliance.picks[j] = (String) picks.get(j);
-						++j;
-					}
-				} else {
-					System.out.println("Event: No picks available for alliance: " + (i + 1));
-				}
-				if(declines != null && declines.size() > 0) {
-					alliance.declines = new String[declines.size()];
-					j = 0;
-					while (j < alliance.declines.length) {
-						alliance.declines[j] = (String) declines.get(j);
-						++j;
-					}
-				} else {
-					System.out.println("Event: No declines available for alliance: " + (i + 1));
-				}
-				event.alliances[i] = alliance;
-				++i;
-			}
-		}
-		if(Settings.FIND_TEAM_RANKINGS) {
-			int j;
-			JSONArray ranks = (JSONArray) this.doRequest(String.valueOf(Constants.URL) + "event/" + year + key + "/rankings", Constants.APPID);
-			i = 1;
-			JSONArray obj;
-			while (i < ranks.size()) {
-				obj = (JSONArray) ranks.get(i);
-				j = 0;
-				while (j < event.teams.length) {
-					if(event.teams[j].team_number == (long) Integer.parseInt((String) obj.get(1))) {
-						event.teams[j].rank = Integer.parseInt((String) obj.get(0));
-						event.teams[j].rankingScore = Double.parseDouble((String) obj.get(2));
-						event.teams[j].auto = Double.parseDouble((String) obj.get(3));
-						event.teams[j].scaleOrChallenge = Double.parseDouble((String) obj.get(4));
-						event.teams[j].goals = Double.parseDouble((String) obj.get(5));
-						event.teams[j].defense = Double.parseDouble((String) obj.get(6));
-						event.teams[j].record = (String) obj.get(7);
-						event.teams[j].played = Integer.parseInt((String) obj.get(8));
-					}
-					++j;
-				}
-				++i;
-			}
-			ArrayList<Team> tempRanked = new ArrayList<Team>();
-			int i2 = 0;
-			while (i2 < event.teams.length) {
-				j = 0;
-				while (j < event.teams.length) {
-					if(event.teams[j].rank == i2 + 1) {
-						tempRanked.add(event.teams[j]);
-					}
-					++j;
-				}
-				++i2;
-			}
-			Team[] ranked = new Team[tempRanked.size()];
-			int i3 = 0;
-			while (i3 < tempRanked.size()) {
-				ranked[i3] = (Team) tempRanked.get(i3);
-				++i3;
-			}
-			event.teams = ranked;
-			tempRanked.clear();
-		}
-		return event;
+	public Team[] getTeams(int pageNumber) {
+		return new TeamRequest().getTeams(pageNumber);
 	}
-
-	@SuppressWarnings("unchecked")
-	public HashMap<Integer, Double> getEventStats(Event event, String statKey) {
-		HashMap<String, Double> stat = ((HashMap<String, HashMap<String, Double>>) doRequest(
-				Constants.URL + "event/" + event.year + event.key + "/stats", Constants.APPID)).get(statKey);
-
-		HashMap<Integer, Double> toGet = new HashMap<Integer, Double>();
-
-		for (String key : stat.keySet()) { // Transfer to the other Hashmap
-			toGet.put(Integer.parseInt(key), stat.get(key));
-		}
-		return toGet;
-	}
-
+	
 	/**
-	 * Returns a list of the </code>Match</code> model for the specified key.
-	 * Some values may be null if they are not available on the server, or they
-	 * are disabled in the </code>Settings</code> class.
-	 * 
-	 * @param key
-	 *            The event key (example: casd)
-	 * @param year
-	 *            The event year (example: 2016)
-	 * @return An array of type </code>Match</code>
+	 * Returns a single <b>Team</b> model
+	 * @param teamNumber The team's frc number (example: 4859)
+	 * @return <b>Team</b> model
 	 */
-	public Match[] getMatches(String key, int year) {
-		JSONArray matches = (JSONArray) doRequest(Constants.URL + "event/" + year + key + "/matches", Constants.APPID);
-
-		Match[] toGet = new Match[matches.size()];
-
-		for (int i = 0; i < toGet.length; i++) {
-			toGet[i] = parseMatch(matches.get(i));
-		}
-
-		return toGet;
+	public Team getTeam(int teamNumber) {
+		return new TeamRequest().getTeam(teamNumber);
 	}
 
 	/**
-	 * Returns a list of the </code>Team</code> model for the specified key.
-	 * Some values may be null if they are not available on the server, or they
-	 * are disabled in the </code>Settings</code> class.
+	 * Returns all the events a team has participated in for a given year.
 	 * 
-	 * @param key
-	 *            The event key (example: casd)
-	 * @param year
-	 *            The event year (example: 2016)
-	 * @return An array of type </code>Match</code>
-	 */
-	public Team[] getTeams(String key, int year) {
-		JSONArray teams = (JSONArray) doRequest(Constants.URL + "event/" + year + key + "/teams", Constants.APPID);
-
-		Team[] toGet = new Team[teams.size()];
-
-		for (int i = 0; i < toGet.length; i++) {
-			toGet[i] = parseTeam(teams.get(i));
-		}
-
-		return toGet;
-	}
-
-	/**
-	 * Returns a single </code>Team</code> model
-	 * 
-	 * @param number
-	 *            The team's frc number (example: 4859)
-	 * @return </code>Team</code> model
-	 */
-	public Team getTeam(int number) {
-		return parseTeam(doRequest(Constants.URL + "team/frc" + number, Constants.APPID));
-	}
-
-	/**
-	 * Returns all the events a team has participated in for a given year in the
-	 * form of Event[]
+	 * @param teamNumber The team's frc number (example: 4850)
+	 * @return An array of the <b>Event</b> model
 	 */
 	public Event[] getTeamEvents(int teamNumber, int year) {
-		JSONArray events = (JSONArray) doRequest(Constants.URL + "team/frc" + teamNumber + "/" + year + "/events", Constants.APPID);
-		// Get all the events of a team in a given year.
-		Event[] toGet = new Event[events.size()];
-		for (int i = 0; i < toGet.length; i++) {
-			toGet[i] = parseEvent(events.get(i));
-		}
-		return toGet;
+		return new TeamRequest().getTeamEvents(teamNumber, year);
+	}
+	
+	/**
+	 * Returns all the awards that the specified team won in an event.
+	 * @param year The event's year (example: 2017)
+	 * @param eventKey The event's code (example: casd)
+	 * @param teamNumber The team's frc number (example: 4859)
+	 * @return An array of the <b>Award</b> model
+	 */
+	public Award[] getTeamEventAwards(int year, String eventKey, int teamNumber) {
+		return new TeamRequest().getTeamEventAwards(year, eventKey, teamNumber);
+	}
+	
+	/**
+	 * Returns all the matches the specified team participated in within an event.
+	 * @param year The event's year (example: 2017)
+	 * @param eventKey The event's code (example: casd)
+	 * @param teamNumber The team's frc number (example: 4859)
+	 * @return An array of the <b>Match</b> model
+	 */
+	public Match[] getTeamEventMatches(int year, String eventKey, int teamNumber) {
+		return new TeamRequest().getTeamEventMatches(year, eventKey, teamNumber);
 	}
 
 	/**
-	 * Returns a single </code>Match</code> model
-	 * 
-	 * @param year
-	 *            The event year (example: 2016)
-	 * @param key
-	 *            The event key (example: casd)
-	 * @param matchKey
-	 *            The match key (example: f1m1)
-	 * @return </code>Match</code> model
+	 * Returns a list of years the specified team has participated in robotics events.
+	 * @param teamNumber The team's frc number (example: 4859)
+	 * @return An array of type <b>long</b>, each element is a year
 	 */
-	public Match getMatch(int year, String key, String matchKey) {
-		return parseMatch(doRequest(Constants.URL + "match/" + year + key + "_" + key, Constants.APPID));
+	public long[] getYearsParticipated(int teamNumber) {
+		return new TeamRequest().getYearsParticipated(teamNumber);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private Match parseMatch(Object object) {
-		Match m = new Match();
-		HashMap hash = (HashMap) object;
-		m.key = (String) hash.get("key");
-		m.comp_level = (String) hash.get("comp_level");
-		m.set_number = (Long) hash.get("set_number");
-		m.match_number = (Long) hash.get("match_number");
-		m.event_key = (String) hash.get("event_key");
-		m.time_string = (String) hash.get("time_string");
-		try {
-			m.time = Long.parseLong(hash.get("time").toString());
-		} catch (Exception e) {
-		}
-		JSONObject alliances = (JSONObject) hash.get("alliances");
-
-		JSONObject blueTeam = (JSONObject) alliances.get("blue");
-		JSONObject redTeam = (JSONObject) alliances.get("red");
-
-		m.blueScore = (Long) blueTeam.get("score");
-		m.redScore = (Long) redTeam.get("score");
-
-		m.blueTeams = new String[3];
-		m.redTeams = new String[3];
-
-		String[] redTeamTokens = redTeam.get("teams").toString().replace("\"", "").replace("[", "").replace("]", "").split(",");
-		String[] blueTeamTokens = blueTeam.get("teams").toString().replace("\"", "").replace("[", "").replace("]", "").split(",");
-
-		for (int j = 0; j < 3; j++) {
-			m.blueTeams[j] = blueTeamTokens[j];
-			m.redTeams[j] = redTeamTokens[j];
-		}
-
-		try {
-			JSONObject score_breakdown = (JSONObject) hash.get("score_breakdown");
-			JSONObject red = (JSONObject) score_breakdown.get("red");
-			JSONObject blue = (JSONObject) score_breakdown.get("blue");
-
-			m.scorableItems = new String[red.keySet().size()];
-			m.redValues = new String[m.scorableItems.length];
-			m.blueValues = new String[m.scorableItems.length];
-			Iterator<String> itr = red.keySet().iterator();
-			for (int i = 0; itr.hasNext(); i++) {
-				String key = itr.next();
-
-				m.scorableItems[i] = key;
-
-				m.redValues[i] = red.get(key).toString();
-				m.blueValues[i] = blue.get(key).toString();
-			}
-		} catch (Exception e) {
-
-		}
-		return m;
+	/**
+	 * Returns a list of media that this team is contained in.
+	 * @param teamNumber The team's frc number (example: 4859)
+	 * @param year The year to get media from (example: 2017)
+	 * @return An array of the <b>Media</b> model
+	 */
+	public Media[] getMedia(int teamNumber, int year) {
+		return new TeamRequest().getMedia(teamNumber, year);
 	}
 
-	@SuppressWarnings("rawtypes")
-	private Event parseEvent(Object object) {
-		Event event = new Event();
-		HashMap hash = (HashMap) object;
-
-		event.key = ((String) hash.get("key")).replaceAll("\\d", "");
-		event.name = (String) hash.get("name");
-		event.short_name = (String) hash.get("short_name");
-		event.event_code = (String) hash.get("event_code");
-		event.event_type_string = (String) hash.get("event_type_string");
-		event.event_district_string = (String) hash.get("event_district_string");
-		event.event_district = (Long) hash.get("event_district");
-		event.year = (Long) hash.get("year");
-		// event.week = (Long) hash.get("week");
-		event.location = (String) hash.get("location");
-		event.venue_address = (String) hash.get("venue_address");
-		event.timezone = (String) hash.get("timezone");
-		event.website = (String) hash.get("website");
-		event.official = (boolean) hash.get("official");
-		if(Settings.GET_EVENT_MATCHES) event.matches = getMatches(event.key, (int) event.year);
-		if(Settings.GET_EVENT_TEAMS) event.teams = getTeams(event.key, (int) event.year);
-		if(Settings.GET_EVENT_AWARDS) event.awards = getAwards(event.key, (int) event.year);
-
-		if(Settings.GET_EVENT_ALLIANCES) {
-			JSONArray alliances = (JSONArray) hash.get("alliances");
-			event.alliances = new Event.Alliance[alliances.size()];
-
-			for (int i = 0; i < alliances.size(); i++) {
-				JSONObject obj = (JSONObject) alliances.get(i);
-				JSONArray declines = (JSONArray) obj.get("declines");
-				JSONArray picks = (JSONArray) obj.get("picks");
-				event.alliances[i].declines = new String[declines.size()];
-				for (int j = 0; j < event.alliances[i].declines.length; j++) {
-					event.alliances[i].declines[j] = (String) declines.get(j);
-				}
-				event.alliances[i].picks = new String[picks.size()];
-				for (int j = 0; j < event.alliances[i].picks.length; j++) {
-					event.alliances[i].picks[j] = (String) picks.get(j);
-				}
-			}
-		}
-
-		return event;
+	/**
+	 * Gets a list of all events the specified team has participated in.
+	 * 
+	 * This method can take some time to run so be wary when pulling a list of a team's events.
+	 * @param teamNumber The team's frc number (example: 4859)
+	 * @return An array of the <b>Event</b> model
+	 */
+	public Event[] getTeamHistoryEvents(int teamNumber) {
+		return new TeamRequest().getTeamHistoryEvents(teamNumber);
 	}
 
-	@SuppressWarnings("rawtypes")
-	private Team parseTeam(Object object) {
-		Team t = new Team();
-		HashMap hash = (HashMap) object;
-
-		t.name = (String) hash.get("name");
-		t.team_number = (Long) hash.get("team_number");
-		t.website = (String) hash.get("website");
-		t.locality = (String) hash.get("locality");
-		t.region = (String) hash.get("region");
-		t.country_name = (String) hash.get("country_name");
-		t.location = (String) hash.get("location");
-		t.key = (String) hash.get("key");
-		t.nickname = (String) hash.get("nickname");
-		t.rookie_year = (Long) hash.get("rookie_year");
-		t.motto = (String) hash.get("motto");
-
-		return t;
+	/**
+	 * Gets a list of all awards the specified team has ever won.
+	 * @param teamNumber The team's frc number (example: 4859)
+	 * @return An array of the <b>Award</b> model
+	 */
+	public Award[] getTeamHistoryAwards(int teamNumber) {
+		return new TeamRequest().getTeamHistoryAwards(teamNumber);
+	}
+	
+	/**
+	 * Gets a list of all robots the team has ever built.
+	 * @param teamNumber The team's frc number (example: 4859)
+	 * @return An array of the <b>Robot</b> model
+	 */
+	public Robot[] getTeamHistoryRobots(int teamNumber) {
+		return new TeamRequest().getTeamHistoryRobots(teamNumber);
 	}
 
-	@SuppressWarnings("rawtypes")
-	private Award[] getAwards(String key, int year) {
-		JSONArray awards = (JSONArray) doRequest(Constants.URL + "event/" + year + key + "/awards", Constants.APPID);
-
-		Award[] toGet = new Award[awards.size()];
-
-		for (int i = 0; i < toGet.length; i++) {
-			Award m = new Award();
-			HashMap hash = (HashMap) awards.get(i);
-			m.name = (String) hash.get("name");
-			m.award_type = (Long) hash.get("award_type");
-			m.event_key = (String) hash.get("event_key");
-			m.year = (Long) hash.get("year");
-
-			try {
-				JSONArray recipient_list = (JSONArray) hash.get("recipient_list");
-				m.recipient_list = new Award.Recipient[recipient_list.size()];
-				for (int j = 0; j < recipient_list.size(); j++) {
-					JSONObject obj = (JSONObject) recipient_list.get(j);
-
-					m.recipient_list[j].team_number = (Long) obj.get("team_number");
-					m.recipient_list[j].awardee = (String) obj.get("awardee");
-				}
-			} catch (Exception e) {
-			}
-			toGet[i] = m;
-		}
-
-		return toGet;
+	/**
+	 * Gets a list of all districts the specified team has been a part of.
+	 * @param teamNumber The team's frc number (example: 4859)
+	 * @return An array of type <b>String</b>. Each element is a year plus a region 
+	 */
+	public String[] getTeamDistricts(int teamNumber) {
+		return new TeamRequest().getTeamDistricts(teamNumber);
 	}
 
-	private Object doRequest(String targetURL, String appID) {
-		HttpURLConnection connection = null;
-
-		try {
-			URL url = new URL(targetURL);
-			connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("GET");
-			connection.setRequestProperty("User-Agent", "TBA-API");
-			connection.setRequestProperty("X-TBA-App-Id", appID);
-			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-			connection.setRequestProperty("charset", "utf-8");
-			connection.setUseCaches(false);
-
-			InputStream is = connection.getInputStream();
-			BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-			StringBuilder response = new StringBuilder();
-			String line;
-			while ((line = rd.readLine()) != null) {
-				response.append(line);
-				response.append('\r');
-			}
-			rd.close();
-			return parser.parse(response.toString());
-		} catch (FileNotFoundException e) {
-			try {
-				System.err.println("DATA REQUEST FAILED: " + e.getMessage() + "RESPONSE CODE: " + connection.getResponseCode()
-						+ connection.getResponseMessage());
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-			e.printStackTrace();
-			return null;
-		} catch (Exception e) {
-			System.err.println("Data request failed. Check your connection / verify correct data key. If the issue persists, contact the developer");
-			e.printStackTrace();
-			return null;
-		} finally {
-			if(connection != null) connection.disconnect();
-		}
+	/* EVENT REQUEST METHODS */
+	/**
+	 * Gets a list of all events within the specified year.
+	 * @param year A year (example: 2017)
+	 * @return An array of the <b>Event</b> model
+	 */
+	public Event[] getEvents(int year) {
+		return new EventRequest().getEvents(year);
 	}
+	/**
+	 * Returns the <b>Event</b> model for the specified eventKey. Some values
+	 * may be null if they are not available on the server, or they are disabled
+	 * in the <b>Settings</b> class.
+	 * 
+	 * @param eventKey The event key (example: casd)
+	 * @param year The year of the event (example: 2017)
+	 * @return <b>Event</b> model
+	 */
+	public Event getEvent(String eventKey, int year) {
+		return new EventRequest().getEvent(eventKey, year);
+	}
+	/**
+	 * Returns a list of the <b>Team</b> model for the specified eventKey.
+	 * Some values may be null if they are not available on the server, or they
+	 * are disabled in the <b>Settings</b> class.
+	 * 
+	 * @param eventKey The event key (example: casd)
+	 * @param year The event year (example: 2017)
+	 * @return An array of the <b>Team</b> model
+	 */
+	public Team[] getTeams(String eventKey, int year) {
+		return new EventRequest().getTeams(eventKey, year);
+	}
+	/**
+	 * Returns a list of the <b>Match</b> model for the specified eventKey.
+	 * Some values may be null if they are not available on the server, or they
+	 * are disabled in the <b>Settings</b> class.
+	 * 
+	 * @param eventKey The event key (example: casd)
+	 * @param year The event year (example: 2017)
+	 * @return An array of the <b>Match</b> model
+	 */
+	public Match[] getMatches(String eventKey, int year) {
+		return new EventRequest().getMatches(eventKey, year);
+	}
+	
+	/**
+	 * Gets some event stats.
+	 * @param event
+	 * @param stateventKey
+	 * @return
+	 */
+	public HashMap<Integer, Double> getEventStats(Event event, String stateventKey) {
+		return new EventRequest().getEventStats(event, stateventKey);
+	}
+	
+	/**
+	 * Gets a list of team rankings from the specified event.
+	 * @param eventKey The event's key (example: casd)
+	 * @param year The year that the event occured (example: 2017)
+	 * @return An array of the <b>Ranking</b> model
+	 */
+	public Ranking[] getEventRankings(String eventKey, int year) {
+		return new EventRequest().getEventRankings(eventKey, year);
+	}
+	
+	/**
+	 * Gets a list of all awards given within the specified event.
+	 * @param eventKey The event's key (example: casd)
+	 * @param year The year that the event occured (example: 2017)
+	 * @return An arry of the <b>Award</b> model
+	 */
+	public Award[] getEventAwards(String eventKey, int year) {
+		return new EventRequest().getEventAwards(eventKey, year);
+	}
+	
+	/**
+	 * Gets a list of rankings within the district of the specified event.
+	 * @param eventKey The event's key (example: casd)
+	 * @param year  The year that the event occured (example: 2017)
+	 * @return An array of the <b>EventPoint</b> model
+	 */
+	public EventPoint[] getEventDistrictPoints(String eventKey, int year) {
+		return new EventRequest().getEventDistrictPoints(eventKey, year);
+	}
+	
+	/* MATCH REQUEST METHODS */
+	/**
+	 * Returns a single <b>Match</b> model
+	 * 
+	 * @param year The event year (example: 2016)
+	 * @param eventKey The event key (example: casd)
+	 * @param matchKey The match key (example: f1m1)
+	 * @return A <b>Match</b> model
+	 */
+	public Match getMatch(int year, String eventKey, String matchKey) {
+		return new MatchRequest().getMatch(year, eventKey, matchKey);
+	}
+	/* DISTRICT REQUEST METHODS */
+	/**
+	 * Gets a list of all the existent districts within the specified year.
+	 * @param year A year (example: 2017)
+	 * @return An array of the <b>District</b> model
+	 */
+	public District[] getDistricts(int year) {
+		return new DistrictRequest().getDistricts(year);
+	}
+	/**
+	 * Gets a list of all events within the specified district.
+	 * @param districtShort The district's short code (example: ne)
+	 * @param year The district's year (example: 2017)
+	 * @return An array of the <b>Event</b> model
+	 */
+	public Event[] getDistrictEvents(String districtShort, int year) {
+		return new DistrictRequest().getDistrictEvents(districtShort, year);
+	}
+	
+	/**
+	 * Gets a list of the rankings of teams within the district.
+	 * @param districtShort The district's short code (example: ne)
+	 * @param year The district's year (example: 2017)
+	 * @return An array of the <b>DistrictRanking</b> model
+	 */
+	public DistrictRanking[] getDistrictRankings(String districtShort, int year) {
+		return new DistrictRequest().getDistrictRankings(districtShort, year);
+	}
+	
+	/**
+	 * Gets a list of all the teams within the specified district.
+	 * @param districtShort The district's short code (example: ne)
+	 * @param year  The district's year (example: 2017)
+	 * @return A array of the <b>Team</b> model
+	 */
+	public Team[] getDistrictTeams(String districtShort, int year) {
+		return new DistrictRequest().getDistrictTeams(districtShort, year);
+	}
+	
 }

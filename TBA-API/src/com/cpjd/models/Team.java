@@ -17,6 +17,9 @@ public class Team {
 	/**
 	 * Ranking information about the team within a certain event. These variables are only
 	 * set if Settings.FIND_TEAM_RANKINGS is true
+	 * 
+	 * These values are ONLY filled in when the teams list is pulled from
+	 * an event!
 	 */
 	
 	public int rank;

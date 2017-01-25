@@ -3,7 +3,7 @@ package com.cpjd.models;
 public class Award {
 	
 	public String name;
-	public Long award_type;
+	public long award_type;
 	public String event_key;
 	public Recipient[] recipient_list;
 	public long year;
