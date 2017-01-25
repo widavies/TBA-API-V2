@@ -192,12 +192,13 @@ public class Parser {
 		try { e.event_district = (long) hash.get("event_district"); } catch(Exception ex) {}
 		try { e.year = (long) hash.get("year"); } catch(Exception ex) {}
 		try { e.week = (long) hash.get("week"); } catch(Exception ex) {}
-		try { 	e.location = (String) hash.get("location"); } catch(Exception ex) {}
+		try { e.location = (String) hash.get("location"); } catch(Exception ex) {}
 		try { e.venue_address = (String) hash.get("venue_address"); } catch(Exception ex) {}
-		try { 	e.timezone = (String) hash.get("timezone"); } catch(Exception ex) {}
+		try { e.timezone = (String) hash.get("timezone"); } catch(Exception ex) {}
 		try { e.website = (String) hash.get("website"); } catch(Exception ex) {}
 		try { e.official = (boolean) hash.get("official"); } catch(Exception ex) {}
 		try { e.start_date = (String) hash.get("start_date"); } catch(Exception ex) {}
+		try { e.end_date = (String) hash.get("end_date"); } catch(Exception ex) {}
 		
 		if(Settings.GET_EVENT_WEBCASTS) {
 			try {

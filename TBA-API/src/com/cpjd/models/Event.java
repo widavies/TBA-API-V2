@@ -16,6 +16,7 @@ public class Event {
 	public String timezone;
 	public String website;
 	public String start_date;
+	public String end_date;
 	public boolean official;
 	
 	/** The following values are set depending on the configuration set up in the Settings class.**/

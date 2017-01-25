@@ -1,5 +1,7 @@
 package com.cpjd.utils;
 
+import com.cpjd.main.Settings;
+import com.cpjd.main.TBA;
 import com.cpjd.models.Award;
 import com.cpjd.models.Event;
 import com.cpjd.models.Match;
@@ -13,14 +15,13 @@ import com.cpjd.models.Team;
  *
  */
 public class Test {
-	
+
 	public static void printRobot(Robot robot) {
 		System.out.println("NEW ROBOT");
 		System.out.println(robot.key);
 		System.out.println(robot.name);
 		System.out.println(robot.team_key);
 		System.out.println(robot.year);
-		
 	}
 	
 	public static void printMedia(Media media) {
