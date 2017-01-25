@@ -15,6 +15,25 @@ import com.cpjd.models.Team;
  *
  */
 public class Test {
+	public static void main(String[] args) {
+		// Get everything set up
+		TBA.setID("Roblu", "Scouting app", "V5");
+		TBA tba = new TBA();
+		// Pull the team
+		Team team = tba.getTeam(48591);
+		// Print some information
+		System.out.println(team.name);
+		System.out.println(team.team_number);
+		System.out.println(team.website);
+		System.out.println(team.locality);
+		System.out.println(team.region);
+		System.out.println(team.country_name);
+		System.out.println(team.location);
+		System.out.println(team.key);
+		System.out.println(team.nickname);
+		System.out.println(team.rookie_year);
+		System.out.println(team.motto);
+	}
 	
 	public static void printRobot(Robot robot) {
 		System.out.println("NEW ROBOT");
@@ -119,7 +138,5 @@ public class Test {
 		System.out.println(team.defense);
 		System.out.println(team.record);
 		System.out.println(team.played);
-		
-		
 	}
 }

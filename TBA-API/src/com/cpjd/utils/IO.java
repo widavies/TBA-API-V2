@@ -43,19 +43,20 @@ public class IO {
 			return parser.parse(response.toString());
 		} catch (FileNotFoundException e) {
 			try {
-				System.err.println("DATA REQUEST FAILED: " + e.getMessage() + "RESPONSE CODE: " + connection.getResponseCode()
+				System.err.println("DATA REQUEST FAILED: " + e.getMessage() + " RESPONSE CODE: " + connection.getResponseCode()
 						+ connection.getResponseMessage());
 			} catch (IOException e1) {
-				e1.printStackTrace();
+				//e1.printStackTrace();
 			}
-			e.printStackTrace();
+			//e.printStackTrace();
 			return null;
 		} catch (Exception e) {
 			System.err.println("Data request failed. Check your connection / verify correct data key. If the issue persists, contact the developer");
-			e.printStackTrace();
+			//e.printStackTrace();
 			return null;
 		} finally {
 			if(connection != null) connection.disconnect();
+			
 		}
 	}
 }
