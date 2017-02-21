@@ -1,5 +1,9 @@
 package com.cpjd.requests;
 
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 
 import org.json.simple.JSONArray;
@@ -19,14 +23,25 @@ public class EventRequest extends Parser {
 	/**
 	 * Gets a list of all events within the specified year.
 	 * @param year A year (example: 2017)
+	 * @param sorted Whether to return the event[] array with index 0 being the earliest event.
 	 * @return An array of the <b>Event</b> model
 	 */
-	public Event[] getEvents(int year) {
+	public Event[] getEvents(int year, boolean sorted) {
 		JSONArray events = (JSONArray) IO.doRequest(Constants.URL + "events/"+year, Constants.APPID);
 		Event[] toGet = new Event[events.size()];
 		for(int i = 0; i < toGet.length; i++) {
 			toGet[i] = parseEvent(events.get(i));
 		}
+		if(sorted) {
+			System.out.println("Sorting");
+			List<Event> toSort = new ArrayList<>(Arrays.asList(toGet));
+			Collections.sort(toSort);
+			for(int i = 0; i < toSort.size(); i++) {
+				System.out.println(toSort.get(i).start_date);
+				toGet[i] = toSort.get(i);
+			}
+		}
+		
 		return toGet;
 	}
 	

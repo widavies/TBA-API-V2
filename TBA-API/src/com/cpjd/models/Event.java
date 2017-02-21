@@ -1,6 +1,8 @@
 package com.cpjd.models;
 
-public class Event {
+import java.util.Calendar;
+
+public class Event implements Comparable<Event> {
 	public String key;
 	public String name;
 	public String short_name;
@@ -42,5 +44,20 @@ public class Event {
 		public String backupIn;
 		public String backupOut;
 		public String name;
+	}
+
+	public long getStartDate(String date) {
+		String[] tokens = date.split("-");
+		
+		Calendar c = Calendar.getInstance();
+		c.set(Calendar.YEAR, Integer.parseInt(tokens[0]));
+		c.set(Calendar.MONTH, Integer.parseInt(tokens[1]));
+		c.set(Calendar.DAY_OF_MONTH, Integer.parseInt(tokens[2]));
+		return c.getTimeInMillis();
+	}
+	
+	@Override
+	public int compareTo(Event o) {
+		return Long.compare(getStartDate(start_date), getStartDate(o.start_date));
 	}
 }

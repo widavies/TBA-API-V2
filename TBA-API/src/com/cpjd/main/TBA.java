@@ -152,10 +152,11 @@ public class TBA {
 	/**
 	 * Gets a list of all events within the specified year.
 	 * @param year A year (example: 2017)
+	 * @param sorted Whether to return the event[] array with index 0 being the earliest event.
 	 * @return An array of the <b>Event</b> model
 	 */
-	public Event[] getEvents(int year) {
-		return new EventRequest().getEvents(year);
+	public Event[] getEvents(int year, boolean sorted) {
+		return new EventRequest().getEvents(year, sorted);
 	}
 	/**
 	 * Returns the <b>Event</b> model for the specified eventKey. Some values
