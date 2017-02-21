@@ -1,6 +1,10 @@
 package com.cpjd.models;
 
-public class Award {
+import java.io.Serializable;
+
+public class Award implements Serializable {
+	
+	private static final long serialVersionUID = 3295532282723916508L;
 	
 	public String name;
 	public long award_type;

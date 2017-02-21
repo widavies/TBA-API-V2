@@ -1,6 +1,11 @@
 package com.cpjd.models.other;
 
-public class EventPoint {
+import java.io.Serializable;
+
+public class EventPoint implements Serializable {
+	
+	private static final long serialVersionUID = -5961413363920162941L;
+	
 	public long alliance_points;
 	public long total;
 	public long award_points;

@@ -1,8 +1,12 @@
 package com.cpjd.models;
 
+import java.io.Serializable;
 import java.util.Calendar;
 
-public class Event implements Comparable<Event> {
+public class Event implements Comparable<Event>, Serializable {
+
+	private static final long serialVersionUID = 4829106493860206905L;
+	
 	public String key;
 	public String name;
 	public String short_name;

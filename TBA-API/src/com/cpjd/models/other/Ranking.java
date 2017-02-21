@@ -1,6 +1,11 @@
 package com.cpjd.models.other;
 
-public class Ranking {
+import java.io.Serializable;
+
+public class Ranking implements Serializable {
+	
+	private static final long serialVersionUID = -8321715421269855400L;
+	
 	public long rank;
 	public long team;
 	public long played;

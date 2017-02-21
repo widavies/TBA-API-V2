@@ -1,6 +1,11 @@
 package com.cpjd.models;
 
-public class Match {
+import java.io.Serializable;
+
+public class Match implements Serializable {
+	
+	private static final long serialVersionUID = -1274461093306977059L;
+	
 	public String key;
 	public String comp_level;
 	public long set_number;

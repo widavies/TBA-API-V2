@@ -1,7 +1,11 @@
 package com.cpjd.models;
 
-public class Team {
+import java.io.Serializable;
 
+public class Team implements Serializable {
+
+	private static final long serialVersionUID = -4327097327503259963L;
+	
 	public String name;
 	public long team_number;
 	public String website;
