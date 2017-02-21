@@ -33,11 +33,9 @@ public class EventRequest extends Parser {
 			toGet[i] = parseEvent(events.get(i));
 		}
 		if(sorted) {
-			System.out.println("Sorting");
 			List<Event> toSort = new ArrayList<>(Arrays.asList(toGet));
 			Collections.sort(toSort);
 			for(int i = 0; i < toSort.size(); i++) {
-				System.out.println(toSort.get(i).start_date);
 				toGet[i] = toSort.get(i);
 			}
 		}
