@@ -27,20 +27,23 @@ public class EventRequest extends Parser {
 	 * @return An array of the <b>Event</b> model
 	 */
 	public Event[] getEvents(int year, boolean sorted) {
-		JSONArray events = (JSONArray) IO.doRequest(Constants.URL + "events/"+year, Constants.APPID);
-		Event[] toGet = new Event[events.size()];
-		for(int i = 0; i < toGet.length; i++) {
-			toGet[i] = parseEvent(events.get(i));
-		}
-		if(sorted) {
-			List<Event> toSort = new ArrayList<>(Arrays.asList(toGet));
-			Collections.sort(toSort);
-			for(int i = 0; i < toSort.size(); i++) {
-				toGet[i] = toSort.get(i);
+		try {
+			JSONArray events = (JSONArray) IO.doRequest(Constants.URL + "events/" + year, Constants.APPID);
+			Event[] toGet = new Event[events.size()];
+			for (int i = 0; i < toGet.length; i++) {
+				toGet[i] = parseEvent(events.get(i));
 			}
+			if(sorted) {
+				List<Event> toSort = new ArrayList<>(Arrays.asList(toGet));
+				Collections.sort(toSort);
+				for (int i = 0; i < toSort.size(); i++) {
+					toGet[i] = toSort.get(i);
+				}
+			}
+			return toGet;
+		} catch (Exception e) {
+			return null;
 		}
-		
-		return toGet;
 	}
 	
 	/**
@@ -48,12 +51,11 @@ public class EventRequest extends Parser {
 	 * may be null if they are not available on the server, or they are disabled
 	 * in the <b>Settings</b> class.
 	 * 
-	 * @param eventKey The event key (example: casd)
-	 * @param year The year of the event (example: 2017)
+	 * @param key year+key (example: 2016casd)
 	 * @return <b>Event</b> model
 	 */
-	public Event getEvent(String eventKey, int year) {
-		return parseEvent(IO.doRequest(Constants.URL + "event/" + year + eventKey, Constants.APPID));
+	public Event getEvent(String key) {
+		return parseEvent(IO.doRequest(Constants.URL + "event/" + key, Constants.APPID));
 	}
 
 	/**

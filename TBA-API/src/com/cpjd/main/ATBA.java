@@ -188,12 +188,11 @@ public class ATBA {
 	 * may be null if they are not available on the server, or they are disabled
 	 * in the <b>Settings</b> class.
 	 * 
-	 * @param eventKey The event key (example: casd)
-	 * @param year The year of the event (example: 2017)
+	 * @param key year+key (example: 2016casd)
 	 * @return <b>Event</b> model
 	 */
 	public Event getEvent() {
-		return new EventRequest().getEvent(eventKey, year);
+		return new EventRequest().getEvent(year + eventKey);
 	}
 	/**
 	 * Returns a list of the <b>Team</b> model for the specified eventKey.

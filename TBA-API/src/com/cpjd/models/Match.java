@@ -25,7 +25,10 @@ public class Match implements Serializable {
 	
 	public Video[] videos;
 	
-	public class Video {
+	public class Video implements Serializable {
+		
+		private static final long serialVersionUID = 7645909171187325331L;
+		
 		public String type;
 		public String key;
 	}

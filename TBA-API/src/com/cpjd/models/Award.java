@@ -12,7 +12,10 @@ public class Award implements Serializable {
 	public Recipient[] recipient_list;
 	public long year;
 	
-	public class Recipient {
+	public class Recipient implements Serializable {
+		
+		private static final long serialVersionUID = 4476804454775395554L;
+		
 		public long team_number;
 		public String awardee;
 	}

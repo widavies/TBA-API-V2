@@ -3,7 +3,7 @@ package com.cpjd.models;
 import java.io.Serializable;
 import java.util.Calendar;
 
-public class Event implements Comparable<Event>, Serializable {
+public class Event implements Serializable, Comparable<Event> {
 
 	private static final long serialVersionUID = 4829106493860206905L;
 	
@@ -37,12 +37,18 @@ public class Event implements Comparable<Event>, Serializable {
 	public Match[] matches;
 	public Award[] awards;
 	
-	public class Webcast {
+	public class Webcast implements Serializable {
+
+		private static final long serialVersionUID = 7178723622969378349L;
+		
 		public String type;
 		public String channel;
 	}
 	
-	public class Alliance {
+	public class Alliance implements Serializable {
+
+		private static final long serialVersionUID = -5010929758269698699L;
+		
 		public String[] picks;
 		public String[] declines;
 		public String backupIn;

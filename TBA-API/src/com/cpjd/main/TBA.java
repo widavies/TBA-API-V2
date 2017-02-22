@@ -168,8 +168,20 @@ public class TBA {
 	 * @return <b>Event</b> model
 	 */
 	public Event getEvent(String eventKey, int year) {
-		return new EventRequest().getEvent(eventKey, year);
+		return new EventRequest().getEvent(year + eventKey);
 	}
+	/**
+	 * Returns the <b>Event</b> model for the specified eventKey. Some values
+	 * may be null if they are not available on the server, or they are disabled
+	 * in the <b>Settings</b> class.
+	 * 
+	 * @param key year+key (example: 2016casd)
+	 * @return <b>Event</b> model
+	 */
+	public Event getEvent(String key) {
+		return new EventRequest().getEvent(key);
+	}
+	
 	/**
 	 * Returns a list of the <b>Team</b> model for the specified eventKey.
 	 * Some values may be null if they are not available on the server, or they
