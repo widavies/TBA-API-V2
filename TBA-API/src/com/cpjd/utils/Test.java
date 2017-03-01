@@ -1,7 +1,5 @@
 package com.cpjd.utils;
 
-import com.cpjd.main.Settings;
-import com.cpjd.main.TBA;
 import com.cpjd.models.Award;
 import com.cpjd.models.Event;
 import com.cpjd.models.Match;
@@ -15,20 +13,6 @@ import com.cpjd.models.Team;
  *
  */
 public class Test {
-	
-	public static void main(String[] args) {
-		TBA.setID("asdf", "asdf", "asdf");
-        Settings.GET_EVENT_WEBCASTS = false;
-        Settings.GET_EVENT_TEAMS = false;
-        Settings.GET_EVENT_MATCHES = false;
-        Settings.GET_EVENT_AWARDS = false;
-
-        Event[] events = new TBA().getEvents(2015, true);
-        for(int i = 0; i < events.length; i++) {
-        	printEvent(events[i]);
-        }
-
-	}
 	
 	public static void printRobot(Robot robot) {
 		System.out.println(robot.key);

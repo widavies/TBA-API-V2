@@ -218,7 +218,7 @@ public class Parser {
 		if(Settings.GET_EVENT_ALLIANCES) try { e = parseEventAlliances(e, hash); } catch(Exception ex) {}
 		if(Settings.GET_EVENT_TEAMS) try { e = parseEventTeams(e, hash); } catch(Exception ex) {}
 		if(Settings.GET_EVENT_MATCHES) try { e = parseEventMatches(e, hash); } catch(Exception ex) {}
-		if(Settings.GET_EVENT_AWARDS) try { e = parseEventAwards(e, hash); } catch(Exception ex) { ex.printStackTrace();}
+		if(Settings.GET_EVENT_AWARDS) try { e = parseEventAwards(e, hash); } catch(Exception ex) {}
 		
 		return e;
 	}
@@ -285,7 +285,7 @@ public class Parser {
 	private Event parseEventAlliances(Event event,HashMap hash) throws Exception {
 		JSONArray alliances = (JSONArray) hash.get("alliances");
 		event.alliances = new Event.Alliance[alliances.size()];
-
+		
 		for(int i = 0; i < alliances.size(); i++) {
 			JSONObject obj = (JSONObject) alliances.get(i);
 			Event.Alliance a = event.new Alliance();
@@ -306,8 +306,8 @@ public class Parser {
 			for(int j = 0; j < picks.size(); j++) {
 				a.picks[j] = (String) picks.get(j);
 			}
+			event.alliances[i] = a;
 		}
-		
 		return event;
 	}
 	
