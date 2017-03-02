@@ -15,11 +15,15 @@ This API requires the use of JSON-Simple. Make sure you download the .jar file a
 
 # Android troubleshooting
 Make sure you have internet permissions declared in the manifest:  
-`<uses-permission android:name="android.permission.INTERNET"/> 
- <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>`
+```java
+<uses-permission android:name="android.permission.INTERNET"/> 
+ <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+ ```
 
 Make sure you run this line of code before calling any API commands:  
-`StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitNetwork().build(); StrictMode.setThreadPolicy(policy);`
+```java
+StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitNetwork().build(); StrictMode.setThreadPolicy(policy);
+```
 
 # Tutorial
 Find it at https://www.github.com/techguy9984/TBA-API/wiki.
