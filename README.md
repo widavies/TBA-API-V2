@@ -17,7 +17,7 @@ This API requires the use of JSON-Simple. Make sure you download the .jar file a
 Make sure you have internet permissions declared in the manifest:  
 ```java
 <uses-permission android:name="android.permission.INTERNET"/> 
- <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
  ```
 
 Make sure you run this line of code before calling any API commands:  
