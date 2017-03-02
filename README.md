@@ -13,6 +13,14 @@ it seems like it's easiest just to use a .jar.
 # Dependencies
 This API requires the use of JSON-Simple. Make sure you download the .jar file at https://code.google.com/archive/p/json-simple/ and add the jar as a dependency as well.
 
+# Android troubleshooting
+Make sure you have internet permissions declared in the manifest:  
+`<uses-permission android:name="android.permission.INTERNET"/> 
+ <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>`
+
+Make sure you run this line of code before calling any API commands:
+`StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitNetwork().build(); StrictMode.setThreadPolicy(policy);`
+
 # Tutorial
 Find it at https://www.github.com/techguy9984/TBA-API/wiki.
 The API is designed to be easy to use and fairly idiot-proof (no offense, I wish everyone designed their software like that).
