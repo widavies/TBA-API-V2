@@ -18,7 +18,7 @@ Make sure you have internet permissions declared in the manifest:
 `<uses-permission android:name="android.permission.INTERNET"/> 
  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>`
 
-Make sure you run this line of code before calling any API commands:
+Make sure you run this line of code before calling any API commands:  
 `StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitNetwork().build(); StrictMode.setThreadPolicy(policy);`
 
 # Tutorial
