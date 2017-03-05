@@ -1,5 +1,6 @@
 package com.cpjd.utils;
 
+import com.cpjd.main.TBA;
 import com.cpjd.models.Award;
 import com.cpjd.models.Event;
 import com.cpjd.models.Match;
@@ -110,10 +111,11 @@ public class Test {
 		
 		System.out.println(team.rank);
 		System.out.println(team.rankingScore);
+		System.out.println(team.matchPoints);
 		System.out.println(team.auto);
-		System.out.println(team.scaleOrChallenge);
-		System.out.println(team.goals);
-		System.out.println(team.defense);
+		System.out.println(team.rotor);
+		System.out.println(team.touchpad);
+		System.out.println(team.pressure);
 		System.out.println(team.record);
 		System.out.println(team.played);
 	}

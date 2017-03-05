@@ -28,10 +28,11 @@ public class Team implements Serializable {
 	
 	public long rank;
 	public double rankingScore;
+	public double matchPoints;
 	public double auto;
-	public double scaleOrChallenge;
-	public double goals;
-	public double defense;
+	public double rotor;
+	public double touchpad;
+	public double pressure;
 	public String record;
 	public String played;
 }
