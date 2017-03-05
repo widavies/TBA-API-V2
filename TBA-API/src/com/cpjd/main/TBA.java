@@ -28,6 +28,9 @@ import com.cpjd.requests.TeamRequest;
  */
 public class TBA {
 	
+	public TBA() {
+	}
+	
 	/**
 	 * REQUIRED Creates a new TBA object for getting data. The three parameters
 	 * are required for the identification header sent to the server.

@@ -20,7 +20,6 @@ public class IO {
 	
 	public static Object doRequest(String targetURL, String appID) {
 		HttpURLConnection connection = null;
-
 		try {
 			URL url = new URL(targetURL);
 			connection = (HttpURLConnection) url.openConnection();
@@ -48,11 +47,11 @@ public class IO {
 			} catch (IOException e1) {
 				//e1.printStackTrace();
 			}
-			//e.printStackTrace();
+			e.printStackTrace();
 			return null;
 		} catch (Exception e) {
 			System.err.println("Data request failed. Check your connection / verify correct data key. If the issue persists, contact the developer");
-			//e.printStackTrace();
+			e.printStackTrace();
 			return null;
 		} finally {
 			if(connection != null) connection.disconnect();

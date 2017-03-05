@@ -26,12 +26,12 @@ public class Team implements Serializable {
 	 * an event!
 	 */
 	
-	public int rank;
+	public long rank;
 	public double rankingScore;
 	public double auto;
 	public double scaleOrChallenge;
 	public double goals;
 	public double defense;
 	public String record;
-	public int played;
+	public String played;
 }

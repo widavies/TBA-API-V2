@@ -21,7 +21,7 @@ public class Match implements Serializable {
 	
 	public String[] scorableItems;
 	public String[] redValues;
-	public String[] blueValues;
+	public String[] blueValues; //
 	
 	public Video[] videos;
 	

@@ -216,7 +216,7 @@ public class Parser {
 		
 		// Process alliance picks and declines
 		if(Settings.GET_EVENT_ALLIANCES) try { e = parseEventAlliances(e, hash); } catch(Exception ex) {}
-		if(Settings.GET_EVENT_TEAMS) try { e = parseEventTeams(e, hash); } catch(Exception ex) {}
+		if(Settings.GET_EVENT_TEAMS) try { e = parseEventTeams(e, hash); } catch(Exception ex) {ex.printStackTrace();}
 		if(Settings.GET_EVENT_MATCHES) try { e = parseEventMatches(e, hash); } catch(Exception ex) {}
 		if(Settings.GET_EVENT_AWARDS) try { e = parseEventAwards(e, hash); } catch(Exception ex) {}
 		
@@ -247,19 +247,18 @@ public class Parser {
 		if(Settings.FIND_TEAM_RANKINGS) {
 			// First, add all scoring information to the teams
 			JSONArray ranks = (JSONArray) IO.doRequest(Constants.URL + "event/" + event.year + event.key.replace(String.valueOf(event.year), "") + "/rankings", Constants.APPID);
-			
 			for(int i = 1; i < ranks.size(); i++) {
 				JSONArray array = (JSONArray) ranks.get(i);
 				for(int j = 0; j < event.teams.length; j++) {
-					if(event.teams[j].team_number == Integer.parseInt((String) array.get(1))) {
-						event.teams[j].rank = Integer.parseInt((String) array.get(0));
-						event.teams[j].rankingScore = Double.parseDouble((String) array.get(2));
-						event.teams[j].auto = Double.parseDouble((String) array.get(3));
-						event.teams[j].scaleOrChallenge = Double.parseDouble((String) array.get(4));
-						event.teams[j].goals = Double.parseDouble((String) array.get(5));
-						event.teams[j].defense = Double.parseDouble((String) array.get(6));
-						event.teams[j].record = (String) array.get(7);
-						event.teams[j].played = Integer.parseInt((String) array.get(8));
+					if(event.teams[j].team_number == Long.parseLong(array.get(1).toString())) {
+						event.teams[j].rank = Long.parseLong(array.get(0).toString());
+						event.teams[j].rankingScore = Double.parseDouble(array.get(2).toString());
+						event.teams[j].auto = Double.parseDouble(array.get(3).toString());
+						event.teams[j].scaleOrChallenge = Double.parseDouble(array.get(4).toString());
+						event.teams[j].goals = Double.parseDouble(array.get(5).toString()); 
+						event.teams[j].defense = Double.parseDouble(array.get(6).toString());
+						event.teams[j].record = array.get(7).toString();
+						event.teams[j].played = array.get(8).toString();
 					}
 				}
 			}
