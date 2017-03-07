@@ -214,7 +214,7 @@ public class Parser {
 			} catch(Exception ex) {}
 		}
 		
-		// Process alliance picks and declines
+		// Process alliance picks and declines 
 		if(Settings.GET_EVENT_ALLIANCES) try { e = parseEventAlliances(e, hash); } catch(Exception ex) {}
 		if(Settings.GET_EVENT_TEAMS) try { e = parseEventTeams(e, hash); } catch(Exception ex) {}
 		if(Settings.GET_EVENT_MATCHES) try { e = parseEventMatches(e, hash); } catch(Exception ex) {}
