@@ -251,14 +251,15 @@ public class Parser {
 				JSONArray array = (JSONArray) ranks.get(i);
 				for(int j = 0; j < event.teams.length; j++) {
 					if(event.teams[j].team_number == Long.parseLong(array.get(1).toString())) {
-						event.teams[j].rank = Long.parseLong(array.get(0).toString());
-						event.teams[j].rankingScore = Double.parseDouble(array.get(2).toString());
-						event.teams[j].auto = Double.parseDouble(array.get(3).toString());
-						event.teams[j].scaleOrChallenge = Double.parseDouble(array.get(4).toString());
-						event.teams[j].goals = Double.parseDouble(array.get(5).toString()); 
-						event.teams[j].defense = Double.parseDouble(array.get(6).toString());
-						event.teams[j].record = array.get(7).toString();
-						event.teams[j].played = array.get(8).toString();
+						event.teams[j].rank = 			Long.parseLong(array.get(0).toString());
+						event.teams[j].rankingScore = 	Double.parseDouble(array.get(2).toString());
+						event.teams[j].matchPoints = 	Double.parseDouble(array.get(3).toString());
+						event.teams[j].auto = 			Double.parseDouble(array.get(4).toString());
+						event.teams[j].rotor =			Double.parseDouble(array.get(5).toString());
+						event.teams[j].touchpad = 		Double.parseDouble(array.get(6).toString()); 
+						event.teams[j].pressure =		Double.parseDouble(array.get(7).toString());
+						event.teams[j].record = 		array.get(8).toString();
+						event.teams[j].played = 		array.get(9).toString();
 					}
 				}
 			}
