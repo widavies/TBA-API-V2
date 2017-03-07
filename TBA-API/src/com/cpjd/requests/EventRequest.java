@@ -1,7 +1,5 @@
 package com.cpjd.requests;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,13 +31,8 @@ public class EventRequest extends Parser {
 			for (int i = 0; i < toGet.length; i++) {
 				toGet[i] = parseEvent(events.get(i));
 			}
-			if(sorted) {
-				List<Event> toSort = new ArrayList<>(Arrays.asList(toGet));
-				Collections.sort(toSort);
-				for (int i = 0; i < toSort.size(); i++) {
-					toGet[i] = toSort.get(i);
-				}
-			}
+			if(sorted) Collections.sort(Arrays.asList(toGet));
+			
 			return toGet;
 		} catch (Exception e) {
 			return null;
@@ -86,9 +79,10 @@ public class EventRequest extends Parser {
 	 * 
 	 * @param eventKey The event key (example: casd)
 	 * @param year The event year (example: 2017)
+	 * @param sorted Return matches sorted by match number
 	 * @return An array of the <b>Match</b> model
 	 */
-	public Match[] getMatches(String eventKey, int year) {
+	public Match[] getMatches(String eventKey, int year, boolean sorted) {
 		JSONArray matches = (JSONArray) IO.doRequest(Constants.URL + "event/" + year + eventKey + "/matches", Constants.APPID);
 
 		Match[] toGet = new Match[matches.size()];
@@ -97,6 +91,8 @@ public class EventRequest extends Parser {
 			toGet[i] = parseMatch(matches.get(i));
 		}
 
+		if(sorted) Collections.sort(Arrays.asList(toGet));
+		
 		return toGet;
 	}
 	

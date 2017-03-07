@@ -35,21 +35,22 @@ public class ATBA {
 	private String eventKey;
 	private String matchKey;
 	private String districtShort;
+	private boolean sorted;
 	
-	public ATBA(int teamNumber, int year, String eventKey, String matchKey, String districtShort) {
-		this.teamNumber = teamNumber; this.year = year; this.eventKey = eventKey; this.matchKey = matchKey; this.districtShort = districtShort;
+	public ATBA(int teamNumber, int year, String eventKey, String matchKey, String districtShort, boolean sorted) {
+		this.teamNumber = teamNumber; this.year = year; this.eventKey = eventKey; this.matchKey = matchKey; this.districtShort = districtShort; this.sorted = sorted;
 	}
-	public ATBA(int teamNumber, int year) {
-		this.year = year; this.teamNumber = teamNumber;
+	public ATBA(int teamNumber, int year, boolean sorted) {
+		this.year = year; this.teamNumber = teamNumber; this.sorted = sorted;
 	}
-	public ATBA(int year, String eventKey, int teamNumber) {
-		this.year = year; this.teamNumber = teamNumber; this.eventKey = eventKey;
+	public ATBA(int year, String eventKey, int teamNumber, boolean sorted) {
+		this.year = year; this.teamNumber = teamNumber; this.eventKey = eventKey; this.sorted = sorted;
 	}
-	public ATBA(int teamNumber) {
-		this.teamNumber = teamNumber;
+	public ATBA(int teamNumber, boolean sorted) {
+		this.teamNumber = teamNumber; this.sorted = sorted;
 	}
-	public ATBA(String eventKey, int year) {
-		this.eventKey = eventKey; this.year = year;
+	public ATBA(String eventKey, int year, boolean sorted) {
+		this.eventKey = eventKey; this.year = year; this.sorted = sorted;
 	}
 	
 	
@@ -216,7 +217,7 @@ public class ATBA {
 	 * @return An array of the <b>Match</b> model
 	 */
 	public Match[] getMatches() {
-		return new EventRequest().getMatches(eventKey, year);
+		return new EventRequest().getMatches(eventKey, year, sorted);
 	}
 	
 	/**

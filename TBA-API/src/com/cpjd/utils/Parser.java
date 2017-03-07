@@ -232,7 +232,7 @@ public class Parser {
 	
 	@SuppressWarnings("rawtypes")
 	private Event parseEventMatches(Event event, HashMap hash) throws Exception {
-		Match[] matches = new EventRequest().getMatches(event.key.replace(String.valueOf(event.year), ""), (int) event.year);
+		Match[] matches = new EventRequest().getMatches(event.key.replace(String.valueOf(event.year), ""), (int) event.year, true);
 		event.matches = matches;
 		return event;
 	}

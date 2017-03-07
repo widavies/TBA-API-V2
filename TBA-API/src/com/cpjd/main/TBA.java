@@ -206,8 +206,8 @@ public class TBA {
 	 * @param year The event year (example: 2017)
 	 * @return An array of the <b>Match</b> model
 	 */
-	public Match[] getMatches(String eventKey, int year) {
-		return new EventRequest().getMatches(eventKey, year);
+	public Match[] getMatches(String eventKey, int year, boolean sorted) {
+		return new EventRequest().getMatches(eventKey, year, sorted);
 	}
 	
 	/**

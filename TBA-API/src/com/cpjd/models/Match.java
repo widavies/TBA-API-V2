@@ -2,7 +2,7 @@ package com.cpjd.models;
 
 import java.io.Serializable;
 
-public class Match implements Serializable {
+public class Match implements Serializable, Comparable<Match> {
 	
 	private static final long serialVersionUID = -1274461093306977059L;
 	
@@ -31,5 +31,10 @@ public class Match implements Serializable {
 		
 		public String type;
 		public String key;
+	}
+
+	@Override
+	public int compareTo(Match o) {
+		return Long.compare(match_number, o.match_number);
 	}
 }
