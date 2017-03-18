@@ -219,8 +219,28 @@ public class Parser {
 		if(Settings.GET_EVENT_TEAMS) try { e = parseEventTeams(e, hash); } catch(Exception ex) {}
 		if(Settings.GET_EVENT_MATCHES) try { e = parseEventMatches(e, hash); } catch(Exception ex) {}
 		if(Settings.GET_EVENT_AWARDS) try { e = parseEventAwards(e, hash); } catch(Exception ex) {}
+		if(Settings.GET_EVENT_STATS) try { e = parseEventStats(e, hash); } catch(Exception ex) {}
 		
 		return e;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public Event parseEventStats(Event event, HashMap hash) throws Exception {
+		JSONObject obj = (JSONObject) IO.doRequest(Constants.URL + "event/" + event.year + event.key.replace(String.valueOf(event.year), "") + "/stats", Constants.APPID);
+		JSONObject obj2 = (JSONObject) obj.get("oprs");
+		@SuppressWarnings("unchecked")
+		Iterator<String> itr = obj2.keySet().iterator();
+		while(itr.hasNext()) {
+			long number = Long.parseLong(itr.next());
+			for(int j = 0; j < event.teams.length; j++) {
+				if(event.teams[j].team_number == number) {
+					event.teams[j].opr = (double) obj2.get(String.valueOf(number));
+					break;
+				}
+			}
+		}
+		
+		return event;
 	}
 	
 	@SuppressWarnings("rawtypes")

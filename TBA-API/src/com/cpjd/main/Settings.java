@@ -54,6 +54,14 @@ public class Settings extends Constants {
 	 */
 	public static boolean GET_EVENT_ALLIANCES = false;
 	/**
+	 * Whether to fill out OPR, CCWMS, and DPRS for each team (in an event). May not be available for some teams
+	 * if they didn't make the scoreboard. :(
+	 * 
+	 * Note: The setting only applies to the data contained within an event.
+	 * Default: false
+	 */
+	public static boolean GET_EVENT_STATS = false;
+	/**
 	 * Whether to automatically sort the Event.teams[] array by rankings. Event.teams[0] is the highest ranked team.
 	 * 
 	 * Note: This setting only applies to the data contained within an event.

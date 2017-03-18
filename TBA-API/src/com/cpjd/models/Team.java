@@ -18,6 +18,9 @@ public class Team implements Serializable {
 	public long rookie_year;
 	public String motto;
 	
+	/** Stats will be returned if Settings.EVENT_STATS is true. **/
+	public double opr;
+	
 	/**
 	 * Ranking information about the team within a certain event. These variables are only
 	 * set if Settings.FIND_TEAM_RANKINGS is true

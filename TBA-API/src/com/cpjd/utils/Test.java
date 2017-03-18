@@ -19,11 +19,11 @@ public class Test {
 	public static void main(String[] args) {
 		TBA.setID("TBA-API", "Description", "v1");
 		TBA t = new TBA();
-		Settings.GET_EVENT_MATCHES = true;
-		Settings.FIND_TEAM_RANKINGS = true;
-		Match[] matches = t.getEvent("miket", 2017).matches;
-		for(int i = 0; i < matches.length; i++) {
-			System.out.println(matches[i].match_number);
+		Settings.GET_EVENT_STATS = true;
+		Event e = t.getEvent("txlu", 2017);
+		Team[] teams = e.teams;
+		for(int i = 0; i < teams.length; i++) {
+			System.out.println("Team #: "+teams[i].team_number+" OPR: "+teams[i].opr);
 		}
 	}
 	
