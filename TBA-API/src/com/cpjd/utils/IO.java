@@ -1,8 +1,6 @@
 package com.cpjd.utils;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -40,22 +38,14 @@ public class IO {
 			}
 			rd.close();
 			return parser.parse(response.toString());
-		} catch (FileNotFoundException e) {
-			try {
-				System.err.println("DATA REQUEST FAILED: " + e.getMessage() + " RESPONSE CODE: " + connection.getResponseCode()
-						+ connection.getResponseMessage());
-			} catch (IOException e1) {
-				//e1.printStackTrace();
-			}
-			e.printStackTrace();
-			return null;
+		} catch(java.lang.Error e) {
+			
 		} catch (Exception e) {
 			System.err.println("Data request failed. Check your connection / verify correct data key. If the issue persists, contact the developer");
 			e.printStackTrace();
-			return null;
 		} finally {
 			if(connection != null) connection.disconnect();
-			
 		}
+		return null;
 	}
 }
