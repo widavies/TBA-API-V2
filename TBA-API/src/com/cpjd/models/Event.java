@@ -56,7 +56,7 @@ public class Event implements Serializable, Comparable<Event> {
 		public String name;
 	}
 
-	public long getStartDate(String date) {
+	public long getTimeInMillis(String date) {
 		String[] tokens = date.split("-");
 		
 		Calendar c = Calendar.getInstance();
@@ -68,6 +68,6 @@ public class Event implements Serializable, Comparable<Event> {
 	
 	@Override
 	public int compareTo(Event o) {
-		return Long.compare(getStartDate(start_date), getStartDate(o.start_date));
+		return Long.compare(getTimeInMillis(start_date), getTimeInMillis(o.start_date));
 	}
 }
