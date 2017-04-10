@@ -266,38 +266,41 @@ public class Parser {
 		// Check if the user wants the teams to be ranked
 		if(Settings.FIND_TEAM_RANKINGS) {
 			// First, add all scoring information to the teams
-			JSONArray ranks = (JSONArray) IO.doRequest(Constants.URL + "event/" + event.year + event.key.replace(String.valueOf(event.year), "") + "/rankings", Constants.APPID);
-			for(int i = 1; i < ranks.size(); i++) {
+			JSONArray ranks = (JSONArray) IO.doRequest(
+					Constants.URL + "event/" + event.year + event.key.replace(String.valueOf(event.year), "") + "/rankings", Constants.APPID);
+			if(ranks == null || ranks.size() == 0) return event;
+			for (int i = 1; i < ranks.size(); i++) {
 				JSONArray array = (JSONArray) ranks.get(i);
-				for(int j = 0; j < event.teams.length; j++) {
+				for (int j = 0; j < event.teams.length; j++) {
 					if(event.teams[j].team_number == Long.parseLong(array.get(1).toString())) {
-						event.teams[j].rank = 			Long.parseLong(array.get(0).toString());
-						event.teams[j].rankingScore = 	Double.parseDouble(array.get(2).toString());
-						event.teams[j].matchPoints = 	Double.parseDouble(array.get(3).toString());
-						event.teams[j].auto = 			Double.parseDouble(array.get(4).toString());
-						event.teams[j].rotor =			Double.parseDouble(array.get(5).toString());
-						event.teams[j].touchpad = 		Double.parseDouble(array.get(6).toString()); 
-						event.teams[j].pressure =		Double.parseDouble(array.get(7).toString());
-						event.teams[j].record = 		array.get(8).toString();
-						event.teams[j].played = 		array.get(9).toString();
+						event.teams[j].rank = Long.parseLong(array.get(0).toString());
+						event.teams[j].rankingScore = Double.parseDouble(array.get(2).toString());
+						event.teams[j].matchPoints = Double.parseDouble(array.get(3).toString());
+						event.teams[j].auto = Double.parseDouble(array.get(4).toString());
+						event.teams[j].rotor = Double.parseDouble(array.get(5).toString());
+						event.teams[j].touchpad = Double.parseDouble(array.get(6).toString());
+						event.teams[j].pressure = Double.parseDouble(array.get(7).toString());
+						event.teams[j].record = array.get(8).toString();
+						event.teams[j].played = array.get(9).toString();
 					}
 				}
+
 			}
 			// Next, rank the teams
 			ArrayList<Team> tempRanked = new ArrayList<Team>();
-			for(int i = 0; i < event.teams.length; i++) {
+			for (int i = 0; i < event.teams.length; i++) {
 				if(event.teams[i].rank == tempRanked.size() + 1) {
 					tempRanked.add(event.teams[i]);
 					i = -1;
 				}
 			}
 			Team[] ranked = new Team[tempRanked.size()];
-			for(int i = 0; i < ranked.length; i++) {
+			for (int i = 0; i < ranked.length; i++) {
 				ranked[i] = tempRanked.get(i);
 			}
 			event.teams = ranked;
 		}
-		
+
 		return event;
 	}
 	
