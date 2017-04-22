@@ -16,6 +16,7 @@ import com.cpjd.requests.DistrictRequest;
 import com.cpjd.requests.EventRequest;
 import com.cpjd.requests.MatchRequest;
 import com.cpjd.requests.TeamRequest;
+import com.cpjd.utils.Parser;
 
 /**
  * Use the TBA class for pulling all your data. 
@@ -299,6 +300,15 @@ public class TBA {
 	 */
 	public Team[] getDistrictTeams(String districtShort, int year) {
 		return new DistrictRequest().getDistrictTeams(districtShort, year);
+	}
+	
+	/**
+	 * If you just want to get the OPR for one team, pass the team into this method
+	 * @param team
+	 * @return
+	 */
+	public Team fillOPR(Event event, Team team) {
+		return new Parser().parseOPR(event, team);
 	}
 	
 }

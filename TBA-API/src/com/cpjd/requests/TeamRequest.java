@@ -189,4 +189,14 @@ public class TeamRequest extends Parser {
 		}
 		return toGet;
 	}
+	
+	/**
+	 * If you just want to get the OPR for one team, pass the team into this method
+	 * @param team
+	 * @return
+	 */
+	public Team fillOPR(Event event, Team team) {
+		return new Parser().parseOPR(event, team);
+	}
+	
 }

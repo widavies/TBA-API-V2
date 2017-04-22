@@ -25,6 +25,17 @@ public class Match implements Serializable, Comparable<Match> {
 	
 	public Video[] videos;
 	
+	/**
+	 * Checks if the specified team is contained within this match.
+	 * @param teamNumber A frc team number. Example: 4859
+	 * @return True if match contains team, false if not
+	 */
+	public boolean doesMatchContainTeam(int teamNumber) {
+		for(String s : blueTeams) if(Integer.parseInt(s.replace("frc", "")) == teamNumber) return true;
+		for(String s : redTeams) if(Integer.parseInt(s.replace("frc", "")) == teamNumber) return true;
+		return false;
+	}
+	
 	public class Video implements Serializable {
 		
 		private static final long serialVersionUID = 7645909171187325331L;
