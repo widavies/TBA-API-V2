@@ -58,12 +58,13 @@ public class Match implements Serializable, Comparable<Match> {
 		if(comp_level.equals("qf")) localScore += 1000;
 		else if(comp_level.equals("sf")) localScore += 10000;
 		else if(comp_level.equals("f")) localScore += 100000;
+		localScore += match_number;
 		
 		long compareScore = o.match_number;
 		if(o.comp_level.equals("qf")) compareScore += 1000;
 		else if(o.comp_level.equals("sf")) compareScore += 10000;
 		else if(o.comp_level.equals("f")) compareScore += 100000;
-		
+		compareScore += o.match_number;
 		
 		return Long.compare(localScore, compareScore);
 	}
