@@ -44,8 +44,27 @@ public class Match implements Serializable, Comparable<Match> {
 		public String key;
 	}
 
+	/**
+	 * Sorts matches by:
+	 * -Quals
+	 * -Quarters
+	 * -Semis
+	 * -Finals
+	 */
+	
 	@Override
 	public int compareTo(Match o) {
-		return Long.compare(match_number, o.match_number);
+		long localScore = match_number;
+		if(comp_level.equals("qf")) localScore += 1000;
+		else if(comp_level.equals("sf")) localScore += 10000;
+		else if(comp_level.equals("f")) localScore += 100000;
+		
+		long compareScore = o.match_number;
+		if(o.comp_level.equals("qf")) compareScore += 1000;
+		else if(o.comp_level.equals("sf")) compareScore += 10000;
+		else if(o.comp_level.equals("f")) compareScore += 100000;
+		
+		
+		return Long.compare(localScore, compareScore);
 	}
 }
