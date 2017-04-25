@@ -49,7 +49,7 @@ public class Match implements Serializable, Comparable<Match> {
 	 * -Quals
 	 * -Quarters
 	 * -Semis
-	 * -Finals
+	 * -Finals 
 	 */
 	
 	@Override
