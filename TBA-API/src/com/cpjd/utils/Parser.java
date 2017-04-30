@@ -239,6 +239,8 @@ public class Parser {
 		return team;
 	}
 	
+	
+	
 	public Event parseEventStats(Event event) throws Exception {
 		JSONObject obj = (JSONObject) IO.doRequest(Constants.URL + "event/" + event.year + event.key.replace(String.valueOf(event.year), "") + "/stats", Constants.APPID);
 		JSONObject obj2 = (JSONObject) obj.get("oprs");

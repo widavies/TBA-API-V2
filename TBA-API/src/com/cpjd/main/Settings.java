@@ -75,4 +75,26 @@ public class Settings extends Constants {
 	 * Default: false
 	 */
 	public static boolean GET_EVENT_WEBCASTS = false;
+	
+	/**
+	 * Sets all the configuration settings to their defaults.
+	 */
+	public static void defaults() {
+		disableAll();
+		GET_EVENT_TEAMS = true;
+		GET_EVENT_MATCHES = true;
+	}
+	
+	/**
+	 * Disables all the settings.
+	 */
+	public static void disableAll() {
+		GET_EVENT_TEAMS = false;
+		GET_EVENT_AWARDS = false;
+		GET_EVENT_MATCHES = false;
+		GET_EVENT_ALLIANCES = false;
+		GET_EVENT_STATS = false;
+		FIND_TEAM_RANKINGS = false;
+		GET_EVENT_WEBCASTS = false;
+	}
 }
