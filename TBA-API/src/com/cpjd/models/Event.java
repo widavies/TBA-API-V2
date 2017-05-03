@@ -56,6 +56,30 @@ public class Event implements Serializable, Comparable<Event> {
 		public String name;
 	}
 
+	/**
+	 * Fills the team with it's statistic from this event
+	 * @param team
+	 * @return Null if team is not in this event
+	 */
+	public Team fillTeamStats(Team team) {
+		if(teams == null || team == null) return null;
+		
+		for(Team t : teams) {
+			if(t.team_number == team.team_number) {
+				team.rank = t.rank;
+				team.rankingScore = t.rankingScore;
+				team.matchPoints = t.matchPoints;
+				team.auto = t.auto;
+				team.rotor = t.rotor;
+				team.touchpad = t.touchpad;
+				team.record = t.record;
+				team.played = t.played;
+				return team;
+			}
+		}
+		return null;
+	}
+	
 	public long getTimeInMillis(String date) {
 		String[] tokens = date.split("-");
 		

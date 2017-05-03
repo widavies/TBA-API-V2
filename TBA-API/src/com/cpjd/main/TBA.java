@@ -67,10 +67,11 @@ public class TBA {
 	 * Returns all the events a team has participated in for a given year.
 	 * 
 	 * @param teamNumber The team's frc number (example: 4850)
+	 * @param sorted Whether to sort the events by date
 	 * @return An array of the <b>Event</b> model
 	 */
-	public Event[] getTeamEvents(int teamNumber, int year) {
-		return new TeamRequest().getTeamEvents(teamNumber, year);
+	public Event[] getTeamEvents(int teamNumber, int year, boolean sorted) {
+		return new TeamRequest().getTeamEvents(teamNumber, year, sorted);
 	}
 	
 	/**

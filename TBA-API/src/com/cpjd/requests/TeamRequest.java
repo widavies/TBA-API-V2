@@ -1,5 +1,7 @@
 package com.cpjd.requests;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 
 import org.json.simple.JSONArray;
@@ -53,15 +55,17 @@ public class TeamRequest extends Parser {
 	 * Returns all the events a team has participated in for a given year.
 	 * 
 	 * @param teamNumber The team's frc number (example: 4850)
+	 * @param sorted Whether to sort the events by date
 	 * @return An array of the <b>Event</b> model
 	 */
-	public Event[] getTeamEvents(int teamNumber, int year) {
+	public Event[] getTeamEvents(int teamNumber, int year, boolean sorted) {
 		JSONArray events = (JSONArray) IO.doRequest(Constants.URL + "team/frc" + teamNumber + "/" + year + "/events", Constants.APPID);
 		// Get all the events of a team in a given year.
 		Event[] toGet = new Event[events.size()];
 		for (int i = 0; i < toGet.length; i++) {
 			toGet[i] = parseEvent(events.get(i));
 		}
+		if(sorted) Collections.sort(Arrays.asList(toGet));
 		return toGet;
 	}
 	

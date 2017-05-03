@@ -92,7 +92,7 @@ public class ATBA {
 	 * @return An array of the <b>Event</b> model
 	 */
 	public Event[] getTeamEvents() {
-		return new TeamRequest().getTeamEvents(teamNumber, year);
+		return new TeamRequest().getTeamEvents(teamNumber, year, sorted);
 	}
 	
 	/**
