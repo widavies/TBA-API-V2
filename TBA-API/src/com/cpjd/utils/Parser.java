@@ -225,21 +225,24 @@ public class Parser {
 	}
 	
 	public Team parseOPR(Event event, Team team) {
-		JSONObject obj = (JSONObject) IO.doRequest(Constants.URL + "event/" + event.year + event.key.replace(String.valueOf(event.year), "") + "/stats", Constants.APPID);
-		JSONObject obj2 = (JSONObject) obj.get("oprs");
-		@SuppressWarnings("unchecked")
-		Iterator<String> itr = obj2.keySet().iterator();
-		while(itr.hasNext()) {
-			long number = Long.parseLong(itr.next());
-			if(number == team.team_number) {
-				team.opr = (double) obj2.get(String.valueOf(number));
-				return team;
+		try {
+			JSONObject obj = (JSONObject) IO.doRequest(Constants.URL + "event/" + event.year + event.key.replace(String.valueOf(event.year), "") + "/stats", Constants.APPID);
+			JSONObject obj2 = (JSONObject) obj.get("oprs");
+			@SuppressWarnings("unchecked")
+			Iterator<String> itr = obj2.keySet().iterator();
+			while(itr.hasNext()) {
+				long number = Long.parseLong(itr.next());
+				if(number == team.team_number) {
+					team.opr = (double) obj2.get(String.valueOf(number));
+					return team;
+				}
 			}
+			return team;
+		} catch(Exception e) {
+			System.err.println("The specified event: "+event.key+" does not contain OPR data.");
+			return null;
 		}
-		return team;
 	}
-	
-	
 	
 	public Event parseEventStats(Event event) throws Exception {
 		JSONObject obj = (JSONObject) IO.doRequest(Constants.URL + "event/" + event.year + event.key.replace(String.valueOf(event.year), "") + "/stats", Constants.APPID);

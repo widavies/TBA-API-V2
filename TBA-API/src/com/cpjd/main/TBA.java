@@ -282,7 +282,7 @@ public class TBA {
 	public Event[] getDistrictEvents(String districtShort, int year) {
 		return new DistrictRequest().getDistrictEvents(districtShort, year);
 	}
-	
+	 
 	/**
 	 * Gets a list of the rankings of teams within the district.
 	 * @param districtShort The district's short code (example: ne)
