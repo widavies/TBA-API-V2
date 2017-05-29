@@ -2,6 +2,8 @@ package com.cpjd.models;
 
 import java.io.Serializable;
 
+import com.cpjd.main.Constants;
+
 public class Match implements Serializable, Comparable<Match> {
 	
 	private static final long serialVersionUID = -1274461093306977059L;
@@ -28,12 +30,12 @@ public class Match implements Serializable, Comparable<Match> {
 	/**
 	 * Checks if the specified team is contained within this match.
 	 * @param teamNumber A frc team number. Example: 4859
-	 * @return True if match contains team, false if not
+	 * @return an integer, Constants.DOES_NOT_CONTAIN, Constants.CONTAINS_TEAM_BLUE, Constants.CONTAINS_TEAM_RED
 	 */
-	public boolean doesMatchContainTeam(int teamNumber) {
-		for(String s : blueTeams) if(Integer.parseInt(s.replace("frc", "")) == teamNumber) return true;
-		for(String s : redTeams) if(Integer.parseInt(s.replace("frc", "")) == teamNumber) return true;
-		return false;
+	public int doesMatchContainTeam(int teamNumber) {
+		for(String s : blueTeams) if(Integer.parseInt(s.replace("frc", "")) == teamNumber) return Constants.CONTAINS_TEAM_BLUE;
+		for(String s : redTeams) if(Integer.parseInt(s.replace("frc", "")) == teamNumber) return Constants.CONTAINS_TEAM_RED;
+		return Constants.DOES_NOT_CONTAIN;
 	}
 	
 	public class Video implements Serializable {

@@ -18,4 +18,9 @@ public class Constants {
 	 * @return <b>true</b> if V3 support is enabled
 	 */
 	public static boolean usingV3() { return USING_V3; }
+	
+	// Return values for doesMatchContainTeam() in Match
+	public static final int DOES_NOT_CONTAIN = 0;
+	public static final int CONTAINS_TEAM_BLUE = 1;
+	public static final int CONTAINS_TEAM_RED = 2;
 }
