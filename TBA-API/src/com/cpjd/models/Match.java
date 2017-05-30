@@ -38,6 +38,19 @@ public class Match implements Serializable, Comparable<Match> {
 		return Constants.DOES_NOT_CONTAIN;
 	}
 	
+	/**
+	 * Returns whether the specified team is on the winning alliance.
+	 * Precondition: the match contains the specified team
+	 * @return true if team is on winning alliance, false if team is on losing alliance, true if tie
+	 */
+	public boolean isOnWinningAlliance(int teamNumber) {
+		int alliance = doesMatchContainTeam(teamNumber);
+		if(alliance == Constants.DOES_NOT_CONTAIN) return false;
+		if(redScore == blueScore) return true;
+		else if(alliance == Constants.CONTAINS_TEAM_RED) return redScore > blueScore;
+		else return blueScore > redScore;
+	}
+	
 	public class Video implements Serializable {
 		
 		private static final long serialVersionUID = 7645909171187325331L;
