@@ -1,5 +1,5 @@
-# V3 Dependency Coming Soon!
-V3 API dependency will be implemented in the summer of 2017.
+# V2 is Deprecated!
+Check out the V3 library here: https://github.com/wdavies973/TBA-API-V3. 
 
 # TBA-API
 A Java API for pulling robotics data from www.thebluealliance.com.
