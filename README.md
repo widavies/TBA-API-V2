@@ -1,4 +1,4 @@
-# V2 is Deprecated!
+# V2 is Deprecated
 Check out the V3 library here: https://github.com/wdavies973/TBA-API-V3. 
 
 # TBA-API
