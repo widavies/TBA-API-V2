@@ -24,6 +24,7 @@ public class Event implements Serializable, Comparable<Event> {
 	public String start_date;
 	public String end_date;
 	public boolean official;
+	public int relevance;
 	
 	/** The following values are set depending on the configuration set up in the Settings class.**/
 	public Webcast[] webcasts;
@@ -81,7 +82,7 @@ public class Event implements Serializable, Comparable<Event> {
 	}
 	
 	public long getTimeInMillis(String date) {
-		String[] tokens = date.split("-");
+		String[] tokens = date.split("/");
 		
 		Calendar c = Calendar.getInstance();
 		c.set(Calendar.YEAR, Integer.parseInt(tokens[0]));
@@ -92,6 +93,8 @@ public class Event implements Serializable, Comparable<Event> {
 	
 	@Override
 	public int compareTo(Event o) {
-		return Long.compare(getTimeInMillis(start_date), getTimeInMillis(o.start_date));
+		if(relevance==0) {
+			return Long.compare(getTimeInMillis(start_date), getTimeInMillis(o.start_date));
+		} else return Integer.compare(relevance, o.relevance);
 	}
 }
